@@ -639,6 +639,9 @@
     jarData.m.push(v);
     $('msg').value='';
     $('fold').disabled=true;
+    $('msg').focus();                      // 讓你可以接著打下一句，鍵盤不用重開
+    // 保險：萬一輸入法在清空之後才把字送回來，再清一次（只清掉剛摺走的那句）
+    setTimeout(()=>{ if($('msg').value.trim()===v){ $('msg').value=''; $('fold').disabled=true; } },60);
     setTimeout(()=>{
       const s=makeStar(v,stars.length);
       s.pop=1; s.vy=1.5;
@@ -647,8 +650,20 @@
     },500);
   }
   $('fold').addEventListener('click',foldStar);
+
+  // 注音／拼音選字時，Enter 的意思是「確認這個字」，不是「送出」。
+  // 不擋掉的話會在選字中途就把星星摺掉，而且選好的字會再掉回輸入框。
+  let composing=false;
+  $('msg').addEventListener('compositionstart',()=>{ composing=true; });
+  $('msg').addEventListener('compositionend',()=>{
+    composing=false;
+    $('fold').disabled = !$('msg').value.trim();
+  });
   $('msg').addEventListener('keydown',e=>{
-    if(e.key==='Enter'){ e.preventDefault(); foldStar(); }
+    if(e.key!=='Enter') return;
+    if(composing || e.isComposing || e.keyCode===229) return;
+    e.preventDefault();
+    foldStar();
   });
   // 沒寫字的時候按鈕是暗的，寫了才亮起來
   $('msg').addEventListener('input',()=>{
