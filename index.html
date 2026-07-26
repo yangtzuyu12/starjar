@@ -4,20 +4,23 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#F6F4ED">
-<title>星星罐 · 一顆星星，一句話</title>
+<title>Star Jar · Send someone a jar of notes.</title>
 <meta name="description" content="把想對一個人說的話，一句一句摺成星星裝進罐子，封起來變成一條連結送給他，他可以一顆一顆打開。">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%23F6F4ED'/><path d='M16.0 2.0 L20.7 9.6 L29.3 11.7 L23.5 18.4 L24.2 27.3 L16.0 23.9 L7.8 27.3 L8.5 18.4 L2.7 11.7 L11.3 9.6 Z' fill='%23E9A03B' stroke='%231A1A17' stroke-width='2.2' stroke-linejoin='round'/></svg>">
 
 <meta property="og:type" content="website">
-<meta property="og:site_name" content="星星罐">
+<meta property="og:site_name" content="Star Jar">
 <meta property="og:locale" content="zh_TW">
-<meta property="og:title" content="有人裝了一罐星星給你">
+<meta property="og:title" content="有人送你一罐星星">
 <meta property="og:description" content="每一顆星星裡都有一句話，一顆一顆打開來看。">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="有人裝了一罐星星給你">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="有人送你一罐星星">
 <meta name="twitter:description" content="每一顆星星裡都有一句話，一顆一顆打開來看。">
-<!-- 想讓預覽卡片有圖的話，上傳一張 1200x630 的圖，然後把下面這行的網址改成你的：
-<meta property="og:image" content="https://你的帳號.github.io/preview.png"> -->
+<meta property="og:image" content="https://yangtzuyu12.github.io/starjar/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:image" content="https://yangtzuyu12.github.io/starjar/og.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <style>
   :root{
     --bg:#F6F4ED;
@@ -38,14 +41,15 @@
   }
   #app{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center}
 
-  header{padding:20px 20px 0;text-align:center}
+  header{padding:30px 20px 0;text-align:center}
   h1{font-size:21px;font-weight:500;letter-spacing:.16em}
-  .sub{margin-top:8px;font-size:13px;color:var(--gray);letter-spacing:.04em}
+  .wordmark{height:48px;width:auto;display:block;margin:0 auto;color:var(--ink)}
+  .sub{margin-top:11px;font-size:13.5px;color:var(--gray);letter-spacing:.11em}
 
   #jarWrap{flex:1;width:100%;position:relative;min-height:0}
   #jar{position:absolute;inset:0;width:100%;height:100%;touch-action:none;display:block}
   .count{
-    position:absolute;left:50%;transform:translateX(-50%);bottom:0;
+    position:absolute;left:50%;transform:translateX(-50%);
     font-size:13px;color:var(--gray);pointer-events:none;letter-spacing:.04em;
   }
 
@@ -181,8 +185,33 @@
 <button class="plain mine hide" id="mineBtn">我的罐子</button>
 <div id="app">
   <header>
-    <h1 id="title">星星罐</h1>
-    <p class="sub" id="sub">一顆星星，一句話　·　裝滿了送給他</p>
+    <h1 id="title" aria-label="Star Jar"><svg class="wordmark" role="img" viewBox="-17 -17 484.0 134.0" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M76.16 15.15 L74.40 13.88 L73.12 12.12 L72.30 12.02 L68.93 11.46 L68.36 9.90 L66.56 6.76 L66.45 3.90 L64.44 2.75 L60.80 1.80 L57.53 2.24 L56.05 1.93 L52.52 3.23 L50.07 1.54 L49.54 3.43 L45.11 2.86 L42.61 2.45 L42.48 3.03 L38.10 5.25 L37.06 7.56 L36.25 7.67 L35.05 8.95 L32.79 10.84 L31.03 13.40 L29.54 15.66 L30.38 16.88 L29.25 18.54 L28.18 20.76 L26.62 22.99 L26.71 23.65 L28.18 26.45 L27.74 30.17 L29.90 32.28 L29.42 34.35 L31.69 34.74 L31.99 35.39 L31.78 38.51 L32.99 39.29 L37.83 39.50 L37.40 41.43 L40.98 41.84 L43.85 41.97 L43.71 45.02 L46.70 45.51 L49.19 46.21 L50.98 48.21 L54.10 48.16 L56.68 47.87 L57.43 50.97 L62.33 50.57 L62.64 50.61 L65.39 53.05 L65.77 53.57 L69.53 54.31 L69.31 55.18 L71.55 56.52 L73.67 59.20 L74.42 59.46 L73.56 63.56 L74.91 63.91 L72.93 66.72 L75.96 67.75 L73.04 71.84 L74.37 74.35 L72.65 74.07 L72.59 76.89 L71.07 81.01 L68.92 83.09 L67.99 83.58 L66.13 85.93 L64.08 87.35 L63.67 90.32 L61.67 90.51 L60.08 93.45 L55.11 94.39 L53.96 92.29 L51.28 94.07 L48.54 93.67 L46.40 93.87 L42.45 95.03 L40.17 92.91 L39.44 93.91 L34.42 92.33 L32.87 92.32 L31.32 88.63 L29.52 89.02 L29.12 84.59 L26.14 82.93 L25.95 81.66 L23.76 79.59 L23.99 78.76" fill="none" stroke="currentColor" stroke-width="17.00" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M76.42 16.99 L74.99 15.13 L71.51 15.27 L73.18 12.79 L71.88 9.55 L69.62 8.62 L64.35 6.30 L66.43 7.73 L62.50 4.58 L61.00 2.19 L58.39 1.32 L56.53 3.80 L52.94 3.37 L53.11 4.77 L46.39 3.27 L46.02 3.47 L43.38 3.59 L38.82 4.85 L38.64 4.38 L39.06 8.17 L38.14 8.69 L35.63 9.75 L34.44 8.69 L32.26 11.16 L32.13 16.22 L27.82 17.52 L30.62 18.28 L30.67 18.51 L27.65 24.26 L25.89 24.10 L29.98 29.39 L26.54 26.55 L28.13 30.04 L28.23 33.65 L32.61 34.34 L32.68 33.78 L33.29 39.34 L32.77 38.27 L37.24 41.67 L36.03 41.95 L42.49 41.76 L41.65 45.76 L47.15 45.26 L48.16 44.03 L47.69 46.94 L51.99 48.03 L55.82 46.95 L55.69 50.67 L58.62 48.37 L59.41 50.42 L65.49 53.01 L62.95 52.66 L65.25 53.17 L68.97 54.03 L72.28 55.05 L70.61 56.62 L72.68 61.22 L70.68 61.23 L75.60 64.98 L74.89 66.92 L72.45 68.49 L73.14 67.05 L75.82 71.72 L73.35 70.87 L74.58 73.51 L72.12 79.58 L73.56 78.46 L69.22 79.63 L68.78 86.46 L66.08 88.35 L63.90 86.83 L60.60 87.67 L62.83 89.80 L57.57 91.18 L54.97 92.80 L55.09 91.53 L51.07 94.38 L47.46 92.26 L47.08 92.77 L41.28 94.31 L39.02 95.36 L36.87 93.73 L37.13 93.51 L31.69 89.93 L31.71 89.90 L31.43 86.21 L30.56 85.14 L26.37 82.31 L27.96 81.19 L25.66 79.03 L21.84 77.59" fill="none" stroke="currentColor" stroke-width="13.60" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M109.10 3.71 L109.70 5.11 L110.11 10.20 L110.62 13.86 L109.09 18.01 L108.40 23.78 L107.04 26.59 L107.12 31.79 L106.94 34.76 L106.17 39.37 L107.79 43.79 L108.11 46.31 L107.13 49.37 L106.97 55.21 L105.97 59.23 L104.72 62.09 L106.36 63.64 L105.46 66.73 L106.64 69.53 L105.57 71.85 L106.04 74.23 L107.97 77.85 L106.31 79.27 L106.87 82.29 L107.19 82.11 L106.89 85.32 L109.89 84.26 L109.00 86.83 L108.92 87.43 L110.34 90.36 L113.29 91.45 L114.70 91.42 L114.61 93.00 L117.05 92.89 L116.21 94.73 L118.10 94.73 L119.07 95.84 L120.10 95.18 L122.82 94.19 L123.72 94.48 L124.97 93.66 L125.27 92.97 L127.25 92.09 L128.76 89.04 L129.75 89.13 L128.76 88.25" fill="none" stroke="currentColor" stroke-width="17.00" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M110.08 4.31 L108.78 5.33 L109.52 10.25 L109.48 11.14 L107.22 19.24 L108.22 21.78 L106.26 29.81 L107.62 33.01 L106.60 33.95 L106.76 41.71 L106.42 44.26 L104.40 49.20 L108.89 50.48 L108.65 53.68 L105.63 58.66 L108.13 60.74 L105.25 63.48 L106.48 69.17 L105.08 68.63 L108.44 75.04 L105.21 75.86 L108.30 78.47 L108.72 78.00 L106.69 82.31 L106.95 81.33 L105.89 85.59 L109.38 87.97 L106.95 85.65 L112.27 87.76 L111.08 88.60 L111.61 89.62 L112.39 90.68 L116.12 93.86 L114.99 92.61 L118.20 92.23 L121.17 95.98 L121.23 96.68 L119.98 97.29 L124.01 97.00 L123.53 91.25 L125.32 93.10 L124.79 91.90 L128.00 92.12 L126.79 91.24 L129.23 88.49 L130.44 86.79" fill="none" stroke="currentColor" stroke-width="13.60" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M92.26 40.33 L124.94 37.38" fill="none" stroke="currentColor" stroke-width="17.00" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M93.66 41.98 L128.58 36.24" fill="none" stroke="currentColor" stroke-width="13.60" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M186.24 52.27 L184.59 49.72 L184.98 49.53 L181.59 49.48 L179.61 46.49 L179.44 47.16 L178.99 43.41 L176.32 44.73 L174.85 40.96 L170.53 41.93 L170.32 42.39 L168.46 43.46 L165.76 41.30 L163.42 41.83 L160.64 45.29 L161.31 43.09 L159.62 45.14 L157.17 46.74 L153.97 46.81 L152.91 49.88 L151.70 49.75 L150.81 51.70 L150.36 55.66 L150.83 56.26 L150.72 57.51 L150.39 60.46 L149.17 64.12 L149.83 64.89 L149.44 68.27 L150.47 68.61 L150.05 69.80 L151.81 74.50 L151.40 74.63 L152.51 77.97 L154.24 80.58 L154.17 82.49 L156.36 84.17 L157.70 84.86 L159.16 85.88 L162.59 87.98 L163.03 86.26 L165.75 88.25 L168.67 89.95 L170.94 89.49 L172.81 88.24 L171.54 89.49 L174.99 88.33 L175.00 89.26 L179.46 87.21 L179.23 85.78 L180.18 84.86 L183.87 82.03 L184.81 80.36 L186.17 81.06 L187.57 78.38" fill="none" stroke="currentColor" stroke-width="17.00" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M184.73 51.63 L187.58 48.90 L185.42 49.68 L181.63 48.67 L181.51 45.46 L177.84 44.44 L176.43 44.92 L174.13 43.33 L172.92 42.90 L171.51 40.84 L169.92 44.25 L169.17 44.16 L166.65 40.19 L161.56 44.12 L163.12 44.30 L158.62 42.97 L156.62 43.67 L154.28 44.40 L153.52 45.88 L151.25 47.06 L153.55 52.00 L154.08 55.33 L153.52 55.27 L149.25 56.34 L147.67 60.81 L147.75 63.55 L149.99 63.21 L148.64 64.79 L149.72 64.44 L152.77 67.83 L153.51 71.80 L151.61 73.45 L150.77 73.18 L152.79 80.31 L154.11 81.37 L154.21 81.21 L159.17 85.02 L157.67 84.71 L162.12 83.93 L163.58 86.40 L162.22 88.43 L163.79 85.53 L166.75 89.76 L170.94 86.79 L173.27 91.63 L173.89 88.95 L174.12 86.40 L177.54 86.04 L177.26 84.32 L181.74 83.44 L181.81 84.74 L184.71 79.64 L183.64 79.91 L184.77 81.85 L184.66 76.65" fill="none" stroke="currentColor" stroke-width="13.60" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M186.40 45.90 L184.46 49.15 L184.66 49.82 L186.23 54.45 L186.22 58.04 L183.74 61.25 L186.63 65.68 L185.49 69.69 L186.28 69.78 L183.90 74.47 L183.70 75.91 L184.74 77.85 L186.05 78.79 L186.37 82.47 L184.50 84.83 L187.05 84.67 L185.04 87.44 L187.42 87.39 L186.64 90.00 L189.03 91.20 L187.41 91.51 L189.61 90.49 L190.45 93.16 L192.34 93.35 L193.86 93.67 L195.41 95.80 L196.51 93.82 L195.34 94.45" fill="none" stroke="currentColor" stroke-width="17.00" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M185.31 46.31 L186.61 46.98 L185.22 50.75 L186.92 52.38 L185.60 54.87 L187.62 63.19 L187.36 63.12 L184.91 68.69 L186.43 72.88 L182.94 76.29 L187.12 78.11 L184.22 79.76 L183.13 80.14 L182.94 80.40 L183.06 84.24 L183.17 83.36 L183.74 84.41 L184.74 88.68 L186.99 90.63 L189.84 90.91 L188.87 88.94 L191.92 89.92 L189.40 91.80 L190.56 95.61 L193.49 96.18 L193.62 92.38 L195.23 92.22 L197.83 94.18" fill="none" stroke="currentColor" stroke-width="13.60" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M222.38 45.83 L219.97 48.11 L222.20 50.19 L220.31 52.24 L220.36 55.32 L220.25 58.19 L220.40 61.61 L218.02 62.70 L218.41 67.70 L220.10 69.50 L218.25 72.65 L218.04 75.43 L217.69 77.23 L220.59 81.15 L220.23 82.61 L220.52 86.07 L219.32 88.99 L218.76 91.88 L220.50 94.29" fill="none" stroke="currentColor" stroke-width="17.00" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M218.39 43.96 L221.46 48.45 L218.26 47.23 L218.34 53.35 L217.45 54.24 L217.21 54.75 L219.26 58.21 L221.74 61.89 L218.07 63.80 L218.27 70.37 L218.82 70.50 L217.75 77.15 L217.71 79.30 L217.37 78.68 L216.93 84.41 L220.32 89.38 L217.64 91.62 L220.56 90.16 L217.97 95.52" fill="none" stroke="currentColor" stroke-width="13.60" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M221.54 56.46 L221.66 56.38 L220.03 55.82 L222.54 54.55 L220.74 52.13 L220.82 51.40 L223.56 50.47 L221.91 48.52 L223.70 49.30 L226.46 48.04 L226.87 46.27 L228.49 44.28 L227.79 43.87 L228.95 42.85 L231.48 45.22 L232.44 43.72 L232.97 44.23 L232.97 43.09 L236.17 43.28 L236.91 42.30 L238.03 43.56 L238.35 44.28 L237.94 46.44 L240.34 47.48 L241.91 46.00 L240.68 47.71 L241.24 46.96 L242.17 48.51" fill="none" stroke="currentColor" stroke-width="17.00" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M217.97 55.63 L219.10 53.18 L221.61 53.65 L221.22 54.39 L223.90 52.10 L223.26 52.63 L220.31 51.59 L221.85 48.11 L225.45 46.56 L222.69 46.41 L228.07 44.46 L229.17 47.20 L229.41 43.00 L227.36 44.61 L229.66 44.22 L231.06 45.84 L235.19 45.30 L234.98 45.00 L234.43 43.87 L238.60 44.61 L238.96 41.60 L240.40 43.52 L237.65 45.97 L242.54 46.60 L238.73 47.18 L240.46 47.11 L241.28 49.33 L245.51 49.32" fill="none" stroke="currentColor" stroke-width="13.60" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M330.45 6.76 L331.69 11.36 L329.70 12.37 L329.04 15.13 L331.14 19.71 L332.09 25.59 L330.97 29.18 L332.86 32.02 L330.83 38.30 L331.83 39.44 L332.76 46.26 L331.72 47.57 L331.56 52.58 L330.61 55.75 L330.32 59.04 L331.56 64.42 L330.17 67.09 L332.65 71.67 L331.36 72.86 L331.73 76.24 L329.51 77.73 L330.07 79.16 L329.89 81.23 L329.46 83.25 L326.97 83.96 L328.28 87.17 L325.37 86.57 L325.30 89.09 L324.73 91.55 L324.94 90.13 L320.80 93.82 L320.02 91.99 L317.80 95.47 L316.90 94.17 L315.01 93.66 L313.24 95.87 L313.22 93.95 L312.15 96.22 L309.02 93.47 L309.06 93.99 L308.40 92.04 L306.56 91.95 L303.51 88.73 L302.31 87.59 L304.34 87.95 L303.07 87.01 L302.34 85.59 L302.03 84.13 L301.40 81.99 L300.60 79.13 L300.23 80.37 L301.63 76.58 L299.87 76.95 L302.22 74.72 L301.17 76.27" fill="none" stroke="currentColor" stroke-width="17.00" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M330.11 5.60 L332.37 9.63 L331.00 15.01 L331.63 17.86 L332.58 19.52 L331.59 26.12 L332.67 27.76 L331.21 34.58 L330.50 34.50 L330.78 42.02 L332.07 46.90 L331.64 45.92 L332.05 50.20 L331.09 57.74 L332.64 60.02 L330.96 63.80 L333.32 67.11 L332.03 71.20 L333.26 74.02 L329.50 74.77 L330.79 78.63 L332.56 80.03 L332.11 81.28 L329.05 82.51 L329.47 85.48 L329.33 86.92 L329.15 86.79 L326.71 86.81 L326.58 92.48 L321.12 89.11 L322.45 92.30 L322.92 90.98 L318.38 91.49 L317.77 96.78 L317.11 96.73 L311.81 95.58 L312.59 92.64 L312.41 94.67 L308.71 96.64 L311.37 95.15 L306.29 90.57 L308.78 91.86 L305.34 91.09 L303.83 87.35 L300.13 89.43 L304.23 87.03 L302.97 83.67 L302.36 84.79 L301.60 81.38 L302.65 79.39 L301.14 79.67 L298.19 79.28 L299.82 77.52 L299.56 76.49 L302.32 75.95" fill="none" stroke="currentColor" stroke-width="13.60" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M310.61 8.58 L343.57 4.66" fill="none" stroke="currentColor" stroke-width="17.00" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M310.69 5.28 L343.41 4.78" fill="none" stroke="currentColor" stroke-width="13.60" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M405.59 51.32 L404.22 52.20 L401.69 51.46 L399.73 47.71 L397.50 48.79 L398.29 46.81 L394.20 44.26 L392.72 43.56 L392.12 43.38 L389.19 41.01 L388.02 40.65 L387.79 43.56 L382.53 43.10 L382.48 43.85 L380.37 43.05 L377.17 43.05 L375.80 45.93 L373.78 45.60 L371.69 47.14 L372.52 48.04 L372.30 50.25 L370.59 53.28 L369.08 54.80 L369.34 57.74 L367.36 60.05 L366.57 59.96 L367.21 64.27 L367.12 65.15 L368.23 67.36 L367.19 69.93 L368.69 70.72 L371.07 73.83 L371.45 76.09 L372.19 78.47 L372.60 78.98 L374.89 80.17 L375.50 82.27 L377.32 82.95 L378.81 85.60 L380.90 84.92 L382.10 88.67 L382.05 88.29 L385.53 87.96 L387.22 89.82 L388.76 89.37 L391.85 88.06 L393.73 87.51 L392.85 88.00 L396.25 86.12 L396.50 83.92 L399.92 82.60 L400.29 83.64 L403.53 82.37 L404.41 81.16 L403.70 78.77" fill="none" stroke="currentColor" stroke-width="17.00" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M402.77 54.32 L403.40 49.43 L404.02 51.00 L400.30 46.95 L397.32 48.55 L396.36 46.61 L397.32 46.53 L391.60 43.52 L390.18 42.33 L388.54 40.14 L388.30 40.47 L383.52 39.73 L382.15 43.90 L381.61 41.07 L382.30 43.62 L379.07 43.66 L377.06 44.64 L372.45 48.94 L374.70 48.27 L371.16 49.16 L373.06 51.77 L367.42 53.96 L366.65 55.74 L367.51 59.26 L367.04 57.04 L369.19 62.53 L369.11 65.26 L369.39 63.95 L367.00 67.34 L368.13 66.69 L366.87 73.04 L367.47 72.51 L372.09 75.20 L372.20 78.30 L372.58 79.94 L372.63 80.54 L375.53 80.98 L377.68 82.33 L377.07 84.01 L378.99 85.53 L384.23 86.73 L385.99 86.55 L384.67 90.10 L385.31 90.07 L388.73 89.48 L393.68 86.78 L393.05 89.54 L393.84 89.95 L393.64 88.07 L395.86 85.79 L401.32 83.84 L400.09 84.84 L404.25 78.60 L401.33 81.85 L406.21 79.25" fill="none" stroke="currentColor" stroke-width="13.60" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M402.55 44.94 L404.10 48.43 L404.58 51.75 L404.37 52.69 L404.11 57.15 L402.59 60.90 L401.84 63.34 L401.90 68.53 L403.54 72.19 L402.56 73.55 L404.60 77.37 L404.06 77.95 L402.81 80.60 L402.23 81.29 L404.23 82.59 L402.91 84.64 L404.42 85.03 L404.04 86.25 L404.37 90.32 L405.43 89.36 L408.02 92.02 L409.39 92.07 L409.16 92.29 L410.85 94.83 L410.50 93.00 L411.59 95.30 L414.55 93.97 L412.64 94.71" fill="none" stroke="currentColor" stroke-width="17.00" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M403.35 43.60 L402.43 47.51 L403.82 52.07 L405.59 56.06 L401.42 57.95 L400.74 59.97 L402.85 64.73 L402.38 68.88 L403.69 72.31 L405.36 75.59 L405.50 74.33 L403.97 80.72 L404.03 78.45 L402.99 82.75 L402.25 83.56 L403.63 84.05 L404.18 85.38 L402.92 87.83 L402.76 87.62 L404.35 87.61 L408.39 88.71 L405.26 93.95 L407.93 92.27 L408.82 93.13 L412.86 92.41 L415.06 96.76 L414.35 94.27 L413.18 93.34" fill="none" stroke="currentColor" stroke-width="13.60" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M438.52 44.88 L439.61 47.40 L438.92 48.92 L438.45 50.48 L438.26 54.43 L439.10 57.84 L438.81 59.27 L437.63 64.74 L435.67 66.92 L435.56 68.58 L435.95 70.91 L437.36 75.53 L437.66 79.03 L436.45 79.97 L436.76 83.57 L436.37 86.03 L438.70 89.79 L438.57 90.74 L438.22 91.42" fill="none" stroke="currentColor" stroke-width="17.00" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M436.42 46.65 L437.28 48.99 L436.87 48.56 L437.00 51.63 L438.66 51.92 L435.73 56.93 L440.16 59.82 L439.21 62.08 L435.34 68.62 L435.29 69.67 L437.20 72.12 L437.50 72.71 L438.61 77.61 L437.43 81.03 L436.11 83.73 L435.38 84.67 L438.08 87.19 L438.73 89.30 L439.14 92.52" fill="none" stroke="currentColor" stroke-width="13.60" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M437.69 55.50 L438.10 55.67 L439.95 54.55 L440.68 52.79 L438.63 51.23 L439.67 51.05 L441.97 51.32 L441.52 47.36 L440.97 48.52 L441.93 47.12 L444.57 47.73 L444.61 44.38 L444.56 45.68 L448.01 44.88 L448.01 42.98 L448.30 43.69 L452.35 41.83 L452.79 41.95 L453.90 43.60 L453.32 43.66 L455.43 44.06 L454.93 45.86 L456.66 45.58 L458.84 45.75 L458.55 48.53 L460.06 47.21 L459.27 47.10 L459.46 48.77" fill="none" stroke="currentColor" stroke-width="17.00" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M436.00 58.32 L440.33 53.71 L440.22 54.97 L439.89 52.67 L439.71 49.78 L441.78 49.41 L441.21 47.80 L439.32 48.30 L442.72 45.99 L445.12 45.72 L446.45 46.08 L443.52 48.17 L444.90 46.71 L447.42 46.96 L448.85 43.54 L451.52 41.13 L450.23 40.87 L453.16 44.14 L455.61 40.87 L453.11 41.30 L453.08 41.37 L453.75 42.15 L456.17 46.44 L455.41 44.12 L458.09 48.81 L461.89 46.09 L460.40 45.98 L460.87 48.48" fill="none" stroke="currentColor" stroke-width="13.60" stroke-linecap="round" stroke-linejoin="round"/></svg></h1>
+    <p class="sub" id="sub">Send someone a jar of notes.</p>
   </header>
 
   <div id="jarWrap">
@@ -436,12 +465,14 @@
 
     const jw=Math.min(W*.80, H*.60, 348);
     const jh=Math.min(H*.86, jw*1.24);
-    box={x:(W-jw)/2, y:(H-jh)/2+jh*.03, w:jw, h:jh};
+    // 空隙固定，不然螢幕一高標題就飄在天上
+    box={x:(W-jw)/2, y:Math.max(2, Math.min((H-jh)/2+jh*.03, 22)), w:jw, h:jh};
     box.r=jw*.22; box.lipW=jw*.58; box.neckW=jw*.5;
     box.lipH=jh*.035; box.neckH=jh*.075;
     box.shoulder=box.y+box.lipH+box.neckH+jh*.11;
     box.mouth=box.neckW;
     buildJarPts();
+    $('count').style.top = Math.min(box.y+box.h+14, H-22)+'px';
     for(const s of stars){ s.r=starSize()*(s.rr||1); confine(s); }
   }
   window.addEventListener('resize',resize);
@@ -860,6 +891,16 @@
   });
 
   // ══════════ 收到罐子 ══════════
+  const TITLE_MARK = $('title').innerHTML;
+  function titleAsMark(){
+    $('title').innerHTML = TITLE_MARK;
+    $('title').setAttribute('aria-label','Star Jar');
+  }
+  function titleAsText(t){
+    $('title').removeAttribute('aria-label');
+    $('title').textContent = t;
+  }
+
   let ephemeral=false, stashed=null;
   function enterOpenMode(d, keySeed){
     if(keySeed==='preview' && !stashed) stashed=jarData;   // 先把你自己的罐子收好
@@ -872,7 +913,7 @@
     $('deckOpen').classList.remove('hide');
     $('exitPreview').classList.toggle('hide', !ephemeral);
     $('sealVeil').classList.remove('open');
-    $('title').textContent = d.to ? '給 '+d.to : '這罐星星給你';
+    titleAsText(d.to ? '給 '+d.to : '這罐星星給你');
     $('sub').textContent   = d.from ? '來自 '+d.from : '裡面有 '+d.m.length+' 句話';
     $('helpOpen').textContent = d.pace===1
       ? '一天一顆，也可以直接點星星'
@@ -896,8 +937,8 @@
     $('deckOpen').classList.add('hide');
     $('deckFill').classList.remove('hide');
     $('exitPreview').classList.add('hide');
-    $('title').textContent='星星罐';
-    $('sub').textContent='一顆星星，一句話　·　裝滿了送給他';
+    titleAsMark();
+    $('sub').textContent='Send someone a jar of notes.';
     resize();
     stars.length=0;
     jarData.m.forEach((msg,i)=>{
