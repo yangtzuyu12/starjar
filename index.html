@@ -1,21 +1,21 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#F6F4ED">
 <title>Star Jar · Send someone a jar of notes.</title>
-<meta name="description" content="把想對一個人說的話，一句一句摺成星星裝進罐子，封起來變成一條連結送給他，他可以一顆一顆打開。">
+<meta name="description" content="Write the things you want to say, one note at a time. Fold them into stars, fill a jar, and send it as a link. They open them one by one.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%23F6F4ED'/><path d='M16.0 2.0 L20.7 9.6 L29.3 11.7 L23.5 18.4 L24.2 27.3 L16.0 23.9 L7.8 27.3 L8.5 18.4 L2.7 11.7 L11.3 9.6 Z' fill='%23E9A03B' stroke='%231A1A17' stroke-width='2.2' stroke-linejoin='round'/></svg>">
 
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Star Jar">
-<meta property="og:locale" content="zh_TW">
-<meta property="og:title" content="有人送你一罐星星">
-<meta property="og:description" content="每一顆星星裡都有一句話，一顆一顆打開來看。">
+<meta property="og:locale" content="en_US">
+<meta property="og:title" content="Someone sent you a jar of notes">
+<meta property="og:description" content="Every star holds a note. Open them one at a time.">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="有人送你一罐星星">
-<meta name="twitter:description" content="每一顆星星裡都有一句話，一顆一顆打開來看。">
+<meta name="twitter:title" content="Someone sent you a jar of notes">
+<meta name="twitter:description" content="Every star holds a note. Open them one at a time.">
 <meta property="og:image" content="https://yangtzuyu12.github.io/starjar/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -40,6 +40,7 @@
     overflow:hidden;
   }
   #app{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center}
+  header{transition:padding-top .2s ease}
 
   header{padding:30px 20px 0;text-align:center}
   h1{font-size:21px;font-weight:500;letter-spacing:.16em}
@@ -53,9 +54,9 @@
     font-size:13px;color:var(--gray);pointer-events:none;letter-spacing:.04em;
   }
 
-  .deck{width:100%;max-width:520px;padding:0 22px 20px;text-align:center}
+  .deck{width:100%;max-width:520px;padding:0 22px 20px;text-align:center;position:relative;z-index:2}
 
-  /* 打字：一條線都沒有，只有字 */
+  /* typing: no box, no line, just the words */
   #msg{
     font-family:var(--serif);font-size:25px;color:var(--ink);
     width:100%;text-align:center;background:none;border:0;
@@ -78,7 +79,7 @@
   .plain{border-color:transparent;background:none;color:var(--gray);padding:12px 14px}
   .plain:hover{color:var(--ink)}
 
-  /* 疊層 */
+  /* overlays */
   .veil{
     position:fixed;inset:0;z-index:9;display:none;place-items:center;padding:20px;
     background:rgba(28,27,22,.34);
@@ -131,7 +132,7 @@
     border-radius:14px;padding:12px 15px;max-height:96px;overflow:auto;color:var(--gray);
   }
 
-  /* 攤開的紙條 */
+  /* the unfolded note */
   .slip{
     width:100%;max-width:400px;background:var(--card);
     border-radius:20px;padding:44px 30px;text-align:center;
@@ -164,13 +165,20 @@
   }
   .toast.show{opacity:1;transform:translate(-50%,0)}
 
-  /* 飛進罐子的紙條 */
+  /* the note flying into the jar */
   .fly{
     position:fixed;z-index:8;pointer-events:none;
     font-family:var(--serif);font-size:25px;color:var(--ink);
     white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center;
     transition:transform .6s cubic-bezier(.5,0,.72,.5),opacity .6s ease;
   }
+  /* keyboard up: keep only what is being used */
+  body.tight header,
+  body.tight #demoRow,
+  body.tight .help{display:none}
+  body.tight .acts{margin-top:16px}
+  body.tight .deck{padding-bottom:12px}
+
   .hide{display:none !important}
 
   @media (max-width:400px){
@@ -182,7 +190,7 @@
 </style>
 </head>
 <body>
-<button class="plain mine hide" id="mineBtn">我的罐子</button>
+<button class="plain mine hide" id="mineBtn">My jars</button>
 <div id="app">
   <header>
     <h1 id="title" aria-label="Star Jar"><svg class="wordmark" role="img" viewBox="-17 -17 484.0 134.0" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M76.16 15.15 L74.40 13.88 L73.12 12.12 L72.30 12.02 L68.93 11.46 L68.36 9.90 L66.56 6.76 L66.45 3.90 L64.44 2.75 L60.80 1.80 L57.53 2.24 L56.05 1.93 L52.52 3.23 L50.07 1.54 L49.54 3.43 L45.11 2.86 L42.61 2.45 L42.48 3.03 L38.10 5.25 L37.06 7.56 L36.25 7.67 L35.05 8.95 L32.79 10.84 L31.03 13.40 L29.54 15.66 L30.38 16.88 L29.25 18.54 L28.18 20.76 L26.62 22.99 L26.71 23.65 L28.18 26.45 L27.74 30.17 L29.90 32.28 L29.42 34.35 L31.69 34.74 L31.99 35.39 L31.78 38.51 L32.99 39.29 L37.83 39.50 L37.40 41.43 L40.98 41.84 L43.85 41.97 L43.71 45.02 L46.70 45.51 L49.19 46.21 L50.98 48.21 L54.10 48.16 L56.68 47.87 L57.43 50.97 L62.33 50.57 L62.64 50.61 L65.39 53.05 L65.77 53.57 L69.53 54.31 L69.31 55.18 L71.55 56.52 L73.67 59.20 L74.42 59.46 L73.56 63.56 L74.91 63.91 L72.93 66.72 L75.96 67.75 L73.04 71.84 L74.37 74.35 L72.65 74.07 L72.59 76.89 L71.07 81.01 L68.92 83.09 L67.99 83.58 L66.13 85.93 L64.08 87.35 L63.67 90.32 L61.67 90.51 L60.08 93.45 L55.11 94.39 L53.96 92.29 L51.28 94.07 L48.54 93.67 L46.40 93.87 L42.45 95.03 L40.17 92.91 L39.44 93.91 L34.42 92.33 L32.87 92.32 L31.32 88.63 L29.52 89.02 L29.12 84.59 L26.14 82.93 L25.95 81.66 L23.76 79.59 L23.99 78.76" fill="none" stroke="currentColor" stroke-width="17.00" stroke-linecap="round" stroke-linejoin="round"/>
@@ -220,57 +228,57 @@
   </div>
 
   <div class="deck" id="deckFill">
-    <input id="msg" maxlength="70" placeholder="寫一句話…" autocomplete="off">
+    <input id="msg" maxlength="70" placeholder="Write something…" autocomplete="off">
     <div class="acts">
-      <button class="solid" id="fold" disabled>摺成星星</button>
-      <button class="hide" id="openSeal">蓋上蓋子</button>
+      <button class="solid" id="fold" disabled>Fold a star</button>
+      <button class="hide" id="openSeal">Close the jar</button>
     </div>
-    <div class="acts"><button class="plain" id="demoBtn">看看收到的人會看到什麼</button></div>
+    <div class="acts" id="demoRow"><button class="plain" id="demoBtn">See what they&rsquo;ll get</button></div>
   </div>
 
   <div class="deck hide" id="deckOpen">
     <div class="acts">
-      <button class="solid" id="pick">搖出一顆</button>
+      <button class="solid" id="pick">Shake one out</button>
     </div>
-    <p class="help" id="helpOpen">也可以直接點罐子裡的星星</p>
-    <div class="acts"><button class="plain hide" id="exitPreview">離開預覽</button></div>
+    <p class="help" id="helpOpen">Or tap any star in the jar</p>
+    <div class="acts" id="exitRow"><button class="plain hide" id="exitPreview">Exit preview</button></div>
   </div>
 </div>
 
 <div class="veil" id="sealVeil">
   <div class="card">
-    <button class="x" id="closeSeal" aria-label="關閉">✕</button>
+    <button class="x" id="closeSeal" aria-label="Close">✕</button>
 
     <div id="sealForm">
-      <h2>蓋上蓋子</h2>
+      <h2>Close the jar</h2>
       <div class="field">
-        <label>要給誰</label>
-        <input class="pill" id="toName" maxlength="14" placeholder="他的名字（可以不填）">
+        <label>Who it&rsquo;s for</label>
+        <input class="pill" id="toName" maxlength="14" placeholder="Their name (optional)">
       </div>
       <div class="field">
-        <label>你是誰</label>
-        <input class="pill" id="fromName" maxlength="14" placeholder="你的名字（可以不填）">
+        <label>From</label>
+        <input class="pill" id="fromName" maxlength="14" placeholder="Your name (optional)">
       </div>
       <div class="check" id="paceCheck">
         <span class="box"></span>
-        <span>一天只讓他開一顆</span>
+        <span>Let them open one a day</span>
       </div>
       <div class="cardActs">
-        <button id="backSeal">再想想</button>
-        <button class="solid" id="doSeal">蓋起來</button>
+        <button id="backSeal">Not yet</button>
+        <button class="solid" id="doSeal">Seal it</button>
       </div>
     </div>
 
     <div id="sealDone" class="hide">
-      <h2>封好了</h2>
+      <h2>Sealed</h2>
       <p class="doneline" id="doneLine"></p>
-      <button class="solid wide" id="shareLink">傳給他</button>
+      <button class="solid wide" id="shareLink">Send it</button>
       <div class="minor">
-        <button class="plain" id="previewLink">先自己看看</button>
-        <button class="plain" id="reopenForm">回去再加幾顆</button>
+        <button class="plain" id="previewLink">Preview</button>
+        <button class="plain" id="reopenForm">Add more</button>
       </div>
       <div class="link" id="linkText"></div>
-      <p class="warn" id="linkNote">拿到這條連結的人都能打開</p>
+      <p class="warn" id="linkNote">Anyone with this link can open it</p>
       <p class="warn hide" id="linkWarn"></p>
     </div>
 
@@ -279,8 +287,8 @@
 
 <div class="veil" id="mineVeil">
   <div class="card">
-    <button class="x" id="closeMine" aria-label="關閉">✕</button>
-    <h2>我的罐子</h2>
+    <button class="x" id="closeMine" aria-label="Close">✕</button>
+    <h2>My jars</h2>
     <div id="mineList"></div>
   </div>
 </div>
@@ -292,8 +300,8 @@
       <p class="msg" id="slipMsg"></p>
     </div>
     <div class="slipActs">
-      <button id="slipClose">放回罐子</button>
-      <button class="solid" id="slipNext">再一顆</button>
+      <button id="slipClose">Put it back</button>
+      <button class="solid" id="slipNext">One more</button>
     </div>
   </div>
 </div>
@@ -305,7 +313,7 @@
   const $ = id => document.getElementById(id);
   const rnd = (a,b) => a + Math.random()*(b-a);
 
-  // ══════════ 整罐星星裝進網址 ══════════
+  // ══════════ the whole jar, packed into the URL ══════════
   function b64u(bytes){
     let s='';
     for(let i=0;i<bytes.length;i+=0x8000)
@@ -351,7 +359,7 @@
   };
   const today=()=>new Date().toISOString().slice(0,10);
 
-  // ══════════ 我做過的罐子 ══════════
+  // ══════════ jars I have made ══════════
   const SHELF='starjar:mine';
   let shelfMem=null;
   function loadShelf(){
@@ -374,7 +382,7 @@
   function refreshMineBtn(){
     const n=loadShelf().length;
     $('mineBtn').classList.toggle('hide', n===0 || mode==='open');
-    $('mineBtn').textContent = n ? '我的罐子 '+n : '我的罐子';
+    $('mineBtn').textContent = n ? 'My jars '+n : 'My jars';
   }
   function hashOf(s){
     let h=5381;
@@ -382,7 +390,7 @@
     return 'jar'+(h>>>0).toString(36);
   }
 
-  // ══════════ 麥克筆：一次畫定，之後每格重畫都一樣 ══════════
+  // ══════════ marker pen: wobble once, then redraw it identically ══════════
   function seeded(n){
     let s=(n>>>0)||1;
     return ()=>((s=(s*1664525+1013904223)>>>0)/4294967296);
@@ -397,7 +405,7 @@
     for(let i=1;i<pts.length;i++) ctx.lineTo(pts[i][0],pts[i][1]);
     if(close) ctx.closePath();
   }
-  // 同一條線描兩遍、粗細略不同 → 邊緣不平整，像簽字筆
+  // Trace each line twice at slightly different weights, so the edge stays uneven like a felt tip.
   function marker(ctx,pts,close,w,seed){
     ctx.strokeStyle=INK; ctx.lineJoin='round'; ctx.lineCap='round';
     ctx.lineWidth=w;
@@ -406,10 +414,10 @@
     tracePts(ctx,wobble(pts,w*.62,seed+3331),close); ctx.stroke();
   }
   const INK='#1A1A17', BG='#F6F4ED';
-  // 粉質、不刺眼的六色，配黑輪廓才像手塗上去的
+  // Six chalky, unfussy colours. Against a black outline they read as hand-filled.
   const FILL=['#E9A03B','#DE6B57','#6FA3B8','#8FA96B','#A98BC0','#E9A8AE'];
 
-  // ══════════ 狀態 ══════════
+  // ══════════ state ══════════
   const MAX=60;
   let mode='fill';
   let jarData={to:'',from:'',pace:0,m:[]};
@@ -417,13 +425,13 @@
   let readSet=new Set();
   let shake=0, lidOn=false;
 
-  // ══════════ 畫布 ══════════
+  // ══════════ canvas ══════════
   const jar=$('jar'), jc=jar.getContext('2d');
   let W=0,H=0,DPR=1;
   let box={x:0,y:0,w:0,h:0,mouth:0,shoulder:0};
   let jarPts=null;
 
-  // 寬口、短頸、大圓角方身
+  // Wide mouth, short neck, softly rounded body.
   function buildJarPts(){
     const b=box, cx=b.x+b.w/2, top=b.y, bot=b.y+b.h, r=b.r;
     const L=b.x, R=b.x+b.w;
@@ -432,22 +440,22 @@
     const lipB=top+b.lipH, neckB=lipB+b.neckH, shB=b.shoulder;
     const p=[];
     p.push([lipL,top],[lipR,top],[lipR,lipB],[nR,lipB],[nR,neckB]);
-    for(let i=1;i<=7;i++){                       // 右肩，往外撐開再往下
+    for(let i=1;i<=7;i++){                       // right shoulder, out then down
       const t=i/7, mt=1-t;
       p.push([mt*mt*nR+2*mt*t*R+t*t*R, mt*mt*neckB+2*mt*t*neckB+t*t*shB]);
     }
     p.push([R,bot-r]);
-    for(let i=1;i<=7;i++){                       // 右下圓角
+    for(let i=1;i<=7;i++){                       // bottom right corner
       const a=i/7*(Math.PI/2);
       p.push([R-r+Math.cos(a)*r, bot-r+Math.sin(a)*r]);
     }
     p.push([L+r,bot]);
-    for(let i=1;i<=7;i++){                       // 左下圓角
+    for(let i=1;i<=7;i++){                       // bottom left corner
       const a=i/7*(Math.PI/2);
       p.push([L+r-Math.sin(a)*r, bot-r+Math.cos(a)*r]);
     }
     p.push([L,shB]);
-    for(let i=1;i<=7;i++){                       // 左肩
+    for(let i=1;i<=7;i++){                       // left shoulder
       const t=i/7, mt=1-t;
       p.push([mt*mt*L+2*mt*t*L+t*t*nL, mt*mt*shB+2*mt*t*neckB+t*t*neckB]);
     }
@@ -458,27 +466,41 @@
   function resize(){
     DPR=Math.min(window.devicePixelRatio||1,2);
     const wrap=$('jarWrap');
+
+    // Centre the wordmark and the jar as one group: measure what is left over,
+    // then give 58% of it to the top and 42% to the bottom so the group sits
+    // just below dead centre, which is where it looks centred.
+    const head=document.querySelector('header');
+    const deckEl = (mode==='open') ? $('deckOpen') : $('deckFill');
+    head.style.paddingTop='0px';
+    const headH=head.offsetHeight;
+    const availW=wrap.clientWidth;
+    const wrapMax=Math.max(90, $('app').clientHeight - headH - deckEl.offsetHeight);
+    const jwT=Math.min(availW*.80, wrapMax*.60, 348);
+    const jhT=Math.min(wrapMax*.86, jwT*1.24);
+    const gapT=Math.max(2, Math.min((wrapMax-jhT)/2, 38));
+    const spare=Math.max(0, wrapMax-gapT-jhT);
+    head.style.paddingTop = Math.round(Math.min(Math.max(14, spare*.58), spare)) + 'px';
+
     W=wrap.clientWidth; H=wrap.clientHeight;
     jar.width=W*DPR; jar.height=H*DPR;
     jar.style.width=W+'px'; jar.style.height=H+'px';
     jc.setTransform(DPR,0,0,DPR,0,0);
 
-    const jw=Math.min(W*.80, H*.60, 348);
-    const jh=Math.min(H*.86, jw*1.24);
-    // 空隙固定，不然螢幕一高標題就飄在天上
-    box={x:(W-jw)/2, y:Math.max(2, Math.min((H-jh)/2+jh*.03, 22)), w:jw, h:jh};
+    const jw=jwT, jh=jhT;
+    box={x:(W-jw)/2, y:gapT, w:jw, h:jh};
     box.r=jw*.22; box.lipW=jw*.58; box.neckW=jw*.5;
     box.lipH=jh*.035; box.neckH=jh*.075;
     box.shoulder=box.y+box.lipH+box.neckH+jh*.11;
     box.mouth=box.neckW;
     buildJarPts();
-    $('count').style.top = Math.min(box.y+box.h+14, H-22)+'px';
+    $('count').style.top = Math.min(box.y+box.h+16, H-22)+'px';
     for(const s of stars){ s.r=starSize()*(s.rr||1); confine(s); }
   }
   window.addEventListener('resize',resize);
 
-  // ══════════ 星星 ══════════
-  const starSize = () => Math.max(13, box.w*.062);   // 罐子多大，星星就多大
+  // ══════════ stars ══════════
+  const starSize = () => Math.max(13, box.w*.062);   // stars scale with the jar
   function makeStar(msg,i){
     const rr=rnd(.88,1.12);
     return {
@@ -496,11 +518,11 @@
       const x0=s.x+Math.cos(a0)*r, y0=s.y+Math.sin(a0)*r;
       const x1=s.x+Math.cos(a1)*r, y1=s.y+Math.sin(a1)*r;
       const mx=(x0+x1)/2, my=(y0+y1)/2;
-      p.push([x0,y0],[s.x+(mx-s.x)*.7, s.y+(my-s.y)*.7]);   // 邊向內凹＝摺紙星
+      p.push([x0,y0],[s.x+(mx-s.x)*.7, s.y+(my-s.y)*.7]);   // concave sides: a folded paper star, not a spiky one
     }
     return p;
   }
-  // 還沒讀 → 塗滿顏色；讀過了 → 顏色被拿走，只剩空輪廓
+  // Unread stars are filled. Once read, the colour is taken away and only the outline is left.
   function drawStar(ctx,s){
     const read = mode==='open' && readSet.has(s.i);
     const pts=starPts(s, s.r*(1+s.pop*.28));
@@ -510,14 +532,14 @@
     marker(ctx,pts,true,read?2.6:3.2,s.seed);
   }
 
-  // ══════════ 罐子 ══════════
+  // ══════════ the jar ══════════
   function drawJarBack(ctx){
     tracePts(ctx,jarPts,true);
     ctx.fillStyle=BG; ctx.fill();
   }
   function drawJarFront(ctx){
     marker(ctx,jarPts,true,6.5,1234);
-    if(lidOn){                                   // 蓋子：罐口上再壓一條粗黑
+    if(lidOn){                                   // the lid: one heavy stroke pressed across the mouth
       const b=box, cx=b.x+b.w/2;
       const lid=[[cx-b.lipW/2-6,b.y-8],[cx+b.lipW/2+6,b.y-8]];
       ctx.lineCap='round';
@@ -526,7 +548,7 @@
     }
   }
 
-  // ══════════ 物理 ══════════
+  // ══════════ physics ══════════
   function confine(s){
     const L=box.x+s.r+4, R=box.x+box.w-s.r-4, B=box.y+box.h-s.r-5;
     if(s.x<L){ s.x=L; s.vx=Math.abs(s.vx)*.42; }
@@ -576,10 +598,10 @@
     if(shake>0) shake=Math.max(0,shake-.045);
   }
 
-  // ══════════ 主迴圈 ══════════
+  // ══════════ main loop ══════════
   function loop(t){
     requestAnimationFrame(loop);
-    try{ render(t); }catch(e){ console.warn('這一格畫壞了：',e); }
+    try{ render(t); }catch(e){ console.warn('Dropped a frame:',e); }
   }
   function render(t){
     jc.clearRect(0,0,W,H);
@@ -596,7 +618,7 @@
     P.px=P.x; P.py=P.y;
   }
 
-  // ══════════ 互動 ══════════
+  // ══════════ input ══════════
   function pointAt(e){
     const r=jar.getBoundingClientRect();
     return {x:e.clientX-r.left, y:e.clientY-r.top};
@@ -634,17 +656,17 @@
   }
   function updateCount(){
     if(mode==='fill'){
-      $('count').textContent = stars.length ? '罐子裡有 '+stars.length+' 顆' : '';
+      $('count').textContent = stars.length ? stars.length+(stars.length===1?' note':' notes')+' in the jar' : '';
       $('openSeal').classList.toggle('hide', stars.length===0);
       $('demoBtn').classList.toggle('hide', stars.length!==0);
     }else{
       $('demoBtn').classList.add('hide');
       const left=stars.length-readSet.size;
-      $('count').textContent = left ? '還有 '+left+' 顆沒開' : '全部都看過了';
+      $('count').textContent = left ? left+' left to open' : 'All opened';
     }
   }
 
-  // ══════════ 丟一顆進去 ══════════
+  // ══════════ dropping one in ══════════
   function flyStrip(text){
     const ta=$('msg').getBoundingClientRect();
     const jr=jar.getBoundingClientRect();
@@ -665,13 +687,14 @@
   function foldStar(){
     const v=$('msg').value.trim();
     if(!v){ return; }
-    if(stars.length>=MAX){ toast('罐子滿了'); return; }
+    if(stars.length>=MAX){ toast('The jar is full'); return; }
     flyStrip(v);
     jarData.m.push(v);
     $('msg').value='';
     $('fold').disabled=true;
-    $('msg').focus();                      // 讓你可以接著打下一句，鍵盤不用重開
-    // 保險：萬一輸入法在清空之後才把字送回來，再清一次（只清掉剛摺走的那句）
+    $('msg').focus();                      // keep focus so the next note can be typed straight away
+    // Safety net: if the IME commits text after we cleared the field, clear it once more
+    // but only if it is exactly the note we just folded, so nothing new gets eaten.
     setTimeout(()=>{ if($('msg').value.trim()===v){ $('msg').value=''; $('fold').disabled=true; } },60);
     setTimeout(()=>{
       const s=makeStar(v,stars.length);
@@ -682,8 +705,9 @@
   }
   $('fold').addEventListener('click',foldStar);
 
-  // 注音／拼音選字時，Enter 的意思是「確認這個字」，不是「送出」。
-  // 不擋掉的話會在選字中途就把星星摺掉，而且選好的字會再掉回輸入框。
+  // While a Chinese IME is composing, Enter means "pick this character", not "submit".
+  // Without this guard a star gets folded mid-composition and the chosen text
+  // then lands back in the input.
   let composing=false;
   $('msg').addEventListener('compositionstart',()=>{ composing=true; });
   $('msg').addEventListener('compositionend',()=>{
@@ -696,25 +720,25 @@
     e.preventDefault();
     foldStar();
   });
-  // 沒寫字的時候按鈕是暗的，寫了才亮起來
+  // the button stays dim until there is something to fold
   $('msg').addEventListener('input',()=>{
     $('fold').disabled = !$('msg').value.trim();
   });
 
-  // ══════════ 打開一顆 ══════════
+  // ══════════ opening one ══════════
   function showSlip(s){
     if(mode==='open'){
       if(jarData.pace===1 && !readSet.has(s.i) && store.lastDay()===today()){
-        toast('今天那顆開過了，明天再來'); return;
+        toast('Today\u2019s star is already open. Come back tomorrow.'); return;
       }
       if(!readSet.has(s.i)){
         readSet.add(s.i);
         store.write([...readSet]);
         if(jarData.pace===1) store.stamp(today());
       }
-      $('slipNo').textContent='第 '+(s.i+1)+' 顆　共 '+stars.length+' 顆';
+      $('slipNo').textContent=(s.i+1)+' of '+stars.length;
     }else{
-      $('slipNo').textContent='第 '+(s.i+1)+' 顆';
+      $('slipNo').textContent='No. '+(s.i+1);
     }
     $('slipMsg').textContent=s.msg;
     $('slipVeil').classList.add('open');
@@ -731,9 +755,9 @@
   });
   function pickOne(){
     const left=stars.filter(s=>!readSet.has(s.i));
-    if(!left.length){ toast('每一顆都開過了'); return; }
+    if(!left.length){ toast('Every star is open'); return; }
     if(jarData.pace===1 && store.lastDay()===today()){
-      toast('今天那顆開過了，明天再來'); return;
+      toast('Today\u2019s star is already open. Come back tomorrow.'); return;
     }
     shake=1;
     const s=left[Math.random()*left.length|0];
@@ -742,7 +766,7 @@
   }
   $('pick').addEventListener('click',pickOne);
 
-  // ══════════ 蓋上蓋子 ══════════
+  // ══════════ closing the jar ══════════
   let pace=0;
   $('paceCheck').addEventListener('click',()=>{
     pace=pace?0:1;
@@ -765,7 +789,7 @@
 
   async function copyUrl(){
     try{ await navigator.clipboard.writeText(sealedUrl); return true; }catch(e){}
-    try{                                    // 非 https 時 clipboard 會被擋，用舊方法
+    try{                                    // the clipboard API is blocked off https, so fall back
       const ta=document.createElement('textarea');
       ta.value=sealedUrl;
       ta.style.cssText='position:fixed;top:-9999px';
@@ -784,20 +808,20 @@
       sealedUrl=location.href.split('#')[0]+'#'+code;
       lidOn=true;
 
-      $('doneLine').textContent = (to ? to+'　' : '') + jarData.m.length+' 顆星星';
+      $('doneLine').textContent = (to ? to+' \u00b7 ' : '') + jarData.m.length+' notes';
       $('linkText').textContent = sealedUrl;
-      $('shareLink').textContent = canShare ? '傳給他' : '複製連結';
+      $('shareLink').textContent = canShare ? 'Send it' : 'Copy link';
 
-      // 還沒放到網路上的話，這條連結只指得到你自己的裝置
+      // Off the web, this link only points at your own device.
       const live=/^https?:/i.test(sealedUrl);
       const warn=$('linkWarn');
       warn.classList.toggle('hide',live);
-      if(!live) warn.textContent='這條連結指向你自己的裝置，傳給別人打不開。把這個檔案放到網路上，產生的連結才送得出去。';
-      else if(sealedUrl.length>7000) toast('連結有點長，有些軟體可能會截斷');
+      if(!live) warn.textContent='This link points at your own device, so it won\u2019t open for anyone else. Put this file online and the link will work.';
+      else if(sealedUrl.length>7000) toast('That\u2019s a long link \u2014 some apps may cut it short');
 
       rememberJar(code,to,from,pace,jarData.m.length);
       showSealStep('done');
-    }catch(e){ toast('蓋不起來，再試一次'); }
+    }catch(e){ toast('Couldn\u2019t seal it. Try again.'); }
   });
 
   $('shareLink').addEventListener('click',async ()=>{
@@ -805,14 +829,14 @@
     if(canShare){
       try{
         await navigator.share({
-          title:'一罐星星',
-          text: to ? '給 '+to+' 的一罐星星' : '有人裝了一罐星星給你',
+          title:'A jar of notes',
+          text: to ? 'A jar of notes for '+to : 'Someone sent you a jar of notes',
           url: sealedUrl
         });
         return;
       }catch(e){ if(e && e.name==='AbortError') return; }
     }
-    toast(await copyUrl() ? '連結複製好了' : '複製不了，長按下面的連結選取');
+    toast(await copyUrl() ? 'Link copied' : 'Couldn\u2019t copy \u2014 press and hold the link below');
   });
 
   $('previewLink').addEventListener('click',()=>{
@@ -823,13 +847,13 @@
 
   function fmtDate(ts){
     const d=new Date(ts);
-    return (d.getMonth()+1)+' 月 '+d.getDate()+' 日';
+    return d.toLocaleDateString('en-US',{month:'short',day:'numeric'});
   }
   function renderMine(){
     const list=loadShelf(), wrap=$('mineList');
     wrap.innerHTML='';
     if(!list.length){
-      wrap.innerHTML='<p class="mineEmpty">還沒有封好的罐子</p>';
+      wrap.innerHTML='<p class="mineEmpty">No sealed jars yet</p>';
       return;
     }
     list.forEach(j=>{
@@ -839,28 +863,28 @@
         '<i style="background:'+FILL[(i*2654435761>>>5)%FILL.length]+'"></i>').join('');
       row.innerHTML=
         '<div class="dots">'+dots+'</div>'+
-        '<h3>'+(j.to?'給 '+esc(j.to):'沒寫收件人')+'</h3>'+
-        '<p class="meta">'+j.n+' 顆星星　·　'+fmtDate(j.at)+
-          (j.pace===1?'　·　一天一顆':'')+'</p>';
+        '<h3>'+(j.to?'For '+esc(j.to):'No name')+'</h3>'+
+        '<p class="meta">'+j.n+' notes \u00b7 '+fmtDate(j.at)+
+          (j.pace===1?' \u00b7 one a day':'')+'</p>';
       const acts=document.createElement('div');
       acts.className='rowActs';
       const bShare=document.createElement('button');
       bShare.className='plain';
-      bShare.textContent = canShare?'傳給他':'複製連結';
+      bShare.textContent = canShare?'Send it':'Copy link';
       bShare.addEventListener('click',()=>shareJar(j));
       const bOpen=document.createElement('button');
       bOpen.className='plain';
-      bOpen.textContent='打開來看';
+      bOpen.textContent='Open';
       bOpen.addEventListener('click',async ()=>{
         try{
           const d=await unpack(j.code);
           $('mineVeil').classList.remove('open');
           enterOpenMode(d,'preview');
-        }catch(e){ toast('這罐讀不出來'); }
+        }catch(e){ toast('Couldn\u2019t open that jar'); }
       });
       const bDel=document.createElement('button');
       bDel.className='plain';
-      bDel.textContent='刪掉';
+      bDel.textContent='Delete';
       bDel.addEventListener('click',()=>{
         saveShelf(loadShelf().filter(x=>x.code!==j.code));
         refreshMineBtn(); renderMine();
@@ -876,13 +900,13 @@
     const url=urlFor(j.code);
     if(canShare){
       try{
-        await navigator.share({title:'一罐星星',
-          text:j.to?'給 '+j.to+' 的一罐星星':'有人裝了一罐星星給你', url});
+        await navigator.share({title:'A jar of notes',
+          text:j.to?'A jar of notes for '+j.to:'Someone sent you a jar of notes', url});
         return;
       }catch(e){ if(e&&e.name==='AbortError') return; }
     }
     sealedUrl=url;
-    toast(await copyUrl() ? '連結複製好了' : '複製不了，這個環境不給複製');
+    toast(await copyUrl() ? 'Link copied' : 'Couldn\u2019t copy here');
   }
   $('mineBtn').addEventListener('click',()=>{ renderMine(); $('mineVeil').classList.add('open'); });
   $('closeMine').addEventListener('click',()=>$('mineVeil').classList.remove('open'));
@@ -890,7 +914,7 @@
     if(e.target===$('mineVeil')) $('mineVeil').classList.remove('open');
   });
 
-  // ══════════ 收到罐子 ══════════
+  // ══════════ receiving a jar ══════════
   const TITLE_MARK = $('title').innerHTML;
   function titleAsMark(){
     $('title').innerHTML = TITLE_MARK;
@@ -903,7 +927,7 @@
 
   let ephemeral=false, stashed=null;
   function enterOpenMode(d, keySeed){
-    if(keySeed==='preview' && !stashed) stashed=jarData;   // 先把你自己的罐子收好
+    if(keySeed==='preview' && !stashed) stashed=jarData;   // put the jar you were filling somewhere safe
     jarData=d; mode='open'; lidOn=true;
     ephemeral = (keySeed==='preview');
     store.key = ephemeral ? '' : hashOf(String(keySeed).slice(0,80)+d.m.length);
@@ -913,11 +937,11 @@
     $('deckOpen').classList.remove('hide');
     $('exitPreview').classList.toggle('hide', !ephemeral);
     $('sealVeil').classList.remove('open');
-    titleAsText(d.to ? '給 '+d.to : '這罐星星給你');
-    $('sub').textContent   = d.from ? '來自 '+d.from : '裡面有 '+d.m.length+' 句話';
+    titleAsText(d.to ? 'For '+d.to : 'A jar for you');
+    $('sub').textContent   = d.from ? 'From '+d.from : d.m.length+' notes inside';
     $('helpOpen').textContent = d.pace===1
-      ? '一天一顆，也可以直接點星星'
-      : '也可以直接點罐子裡的星星';
+      ? 'One a day \u00b7 or tap any star'
+      : 'Or tap any star in the jar';
     resize();
     stars.length=0;
     d.m.forEach((msg,i)=>{
@@ -930,9 +954,9 @@
     refreshMineBtn();
   }
 
-  // 預覽看完要能回來，而且不能重新整理，不然還沒送出的內容就沒了
+  // Getting back from a preview must not reload the page, or anything not yet sent is lost.
   function exitPreview(){
-    if(stashed){ jarData=stashed; stashed=null; }          // 原封不動還你
+    if(stashed){ jarData=stashed; stashed=null; }          // hand it back untouched
     mode='fill'; ephemeral=false; readSet=new Set();
     $('deckOpen').classList.add('hide');
     $('deckFill').classList.remove('hide');
@@ -952,14 +976,14 @@
   }
   $('exitPreview').addEventListener('click',exitPreview);
 
-  // 與其解釋，不如直接讓人站在收件人的位置看一次
+  // Rather than explain it, stand the visitor in the recipient’s place once.
   $('demoBtn').addEventListener('click',()=>{
     enterOpenMode({to:'',from:'',pace:0,m:[
-      '今天也謝謝你',
-      '你笑起來的樣子很好看',
-      '不用一直那麼努力也沒關係',
-      '記得吃飯，記得睡覺',
-      '我一直都在'
+      'Thank you for today',
+      'You look good when you laugh',
+      'You don\u2019t always have to try so hard',
+      'Eat something. Get some sleep.',
+      'I\u2019m still here'
     ]},'preview');
   });
 
@@ -968,11 +992,11 @@
     if(!hash) return false;
     try{
       const d=await unpack(hash);
-      if(!d||!Array.isArray(d.m)||!d.m.length) throw new Error('空罐子');
+      if(!d||!Array.isArray(d.m)||!d.m.length) throw new Error('empty jar');
       enterOpenMode(d, hash.slice(0,80));
       return true;
     }catch(e){
-      toast('這條連結讀不出來');
+      toast('Couldn\u2019t read this link');
       return false;
     }
   }
@@ -983,8 +1007,35 @@
     updateCount();
     refreshMineBtn();
   }
-  // 有人把連結貼進同一個分頁時，網址只有 hash 變、不會重新載入
+  // Pasting a link into the same tab only changes the hash, which does not reload.
   window.addEventListener('hashchange', openFromHash);
+
+  // iOS 的鍵盤不會縮小版面，只是浮在上面，所以固定佈局的底部會被蓋住。
+  // 跟著 visualViewport 調整高度，輸入框就一定看得到。
+  const vv=window.visualViewport;
+  if(vv){
+    let queued=false;
+    const fitViewport=()=>{
+      if(queued) return;
+      queued=true;
+      requestAnimationFrame(()=>{
+        queued=false;
+        const app=$('app');
+        app.style.top=vv.offsetTop+'px';
+        app.style.height=vv.height+'px';
+        app.style.bottom='auto';
+        document.body.classList.toggle('tight', vv.height < 540);
+        resize();
+      });
+    };
+    vv.addEventListener('resize',fitViewport);
+    vv.addEventListener('scroll',fitViewport);
+    fitViewport();
+  }
+  // 舊瀏覽器沒有 visualViewport，至少把輸入框捲進視線內
+  $('msg').addEventListener('focus',()=>{
+    if(!vv) setTimeout(()=>$('msg').scrollIntoView({block:'center'}),260);
+  });
 
   boot();
   requestAnimationFrame(loop);
