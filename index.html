@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#F6F4ED">
+<title>星星罐 · 一顆星星，一句話</title>
+<meta name="description" content="把想對一個人說的話，一句一句摺成星星裝進罐子，封起來變成一條連結送給他，他可以一顆一顆打開。">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%23F6F4ED'/><path d='M16.0 2.0 L20.7 9.6 L29.3 11.7 L23.5 18.4 L24.2 27.3 L16.0 23.9 L7.8 27.3 L8.5 18.4 L2.7 11.7 L11.3 9.6 Z' fill='%23E9A03B' stroke='%231A1A17' stroke-width='2.2' stroke-linejoin='round'/></svg>">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="星星罐">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:title" content="有人裝了一罐星星給你">
+<meta property="og:description" content="每一顆星星裡都有一句話，一顆一顆打開來看。">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="有人裝了一罐星星給你">
+<meta name="twitter:description" content="每一顆星星裡都有一句話，一顆一顆打開來看。">
+<!-- 想讓預覽卡片有圖的話，上傳一張 1200x630 的圖，然後把下面這行的網址改成你的：
+<meta property="og:image" content="https://你的帳號.github.io/preview.png"> -->
+<style>
+  :root{
+    --bg:#F6F4ED;
+    --card:#FBFAF5;
+    --ink:#1A1A17;
+    --gray:#9C978B;
+    --hair:#DBD5C5;
+    --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Songti TC","Noto Serif TC","Times New Roman",serif;
+    --sans:"Helvetica Neue",Helvetica,"PingFang TC","Noto Sans TC",Arial,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    background:var(--bg);color:var(--ink);
+    font-family:var(--serif);
+    -webkit-tap-highlight-color:transparent;
+    overflow:hidden;
+  }
+  #app{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center}
+
+  header{padding:20px 20px 0;text-align:center}
+  h1{font-size:21px;font-weight:500;letter-spacing:.16em}
+  .sub{margin-top:8px;font-size:13px;color:var(--gray);letter-spacing:.04em}
+
+  #jarWrap{flex:1;width:100%;position:relative;min-height:0}
+  #jar{position:absolute;inset:0;width:100%;height:100%;touch-action:none;display:block}
+  .count{
+    position:absolute;left:50%;transform:translateX(-50%);bottom:0;
+    font-size:13px;color:var(--gray);pointer-events:none;letter-spacing:.04em;
+  }
+
+  .deck{width:100%;max-width:520px;padding:0 22px 20px;text-align:center}
+
+  /* 打字：一條線都沒有，只有字 */
+  #msg{
+    font-family:var(--serif);font-size:25px;color:var(--ink);
+    width:100%;text-align:center;background:none;border:0;
+    padding:10px 0;letter-spacing:.03em;
+  }
+  #msg::placeholder{color:#C7C1B2}
+  #msg:focus{outline:none}
+  .help{margin-top:12px;font-family:var(--sans);font-size:12px;color:var(--gray);line-height:1.7}
+
+  .acts{margin-top:26px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+  button{
+    font-family:var(--serif);font-size:15px;cursor:pointer;
+    border-radius:11px;padding:12px 24px;letter-spacing:.05em;
+    border:1px solid var(--hair);background:var(--card);color:var(--ink);
+    transition:opacity .2s ease,transform .12s ease;
+  }
+  button:active{transform:scale(.98)}
+  button:disabled{opacity:.32;cursor:default}
+  .solid{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+  .plain{border-color:transparent;background:none;color:var(--gray);padding:12px 14px}
+  .plain:hover{color:var(--ink)}
+
+  /* 疊層 */
+  .veil{
+    position:fixed;inset:0;z-index:9;display:none;place-items:center;padding:20px;
+    background:rgba(28,27,22,.34);
+  }
+  .veil.open{display:grid}
+  .card{
+    width:100%;max-width:420px;background:var(--card);
+    border-radius:22px;padding:28px 24px 22px;position:relative;
+    box-shadow:0 26px 70px rgba(26,26,23,.26);
+  }
+  .card h2{font-size:24px;font-weight:500;letter-spacing:.04em;margin-bottom:22px}
+  .x{
+    position:absolute;top:24px;right:22px;font-size:20px;color:var(--ink);
+    background:none;border:0;padding:4px 8px;line-height:1;opacity:.7;
+  }
+  .field{margin-bottom:16px;text-align:left}
+  .field label{display:block;font-size:14px;margin-bottom:8px}
+  input.pill{
+    font-family:var(--serif);font-size:16px;color:var(--ink);width:100%;
+    background:var(--bg);border:1px solid var(--hair);border-radius:999px;
+    padding:14px 20px;
+  }
+  input.pill::placeholder{color:#BDB7A8}
+  input.pill:focus{outline:none;border-color:var(--gray)}
+
+  .check{display:flex;align-items:center;gap:12px;cursor:pointer;padding:6px 0 2px;user-select:none}
+  .box{
+    width:28px;height:28px;border-radius:7px;border:1px solid var(--hair);
+    background:var(--bg);flex:none;position:relative;
+  }
+  .check.on .box{background:var(--ink);border-color:var(--ink)}
+  .check.on .box::after{
+    content:"";position:absolute;left:9px;top:4px;width:7px;height:14px;
+    border:solid var(--bg);border-width:0 2.5px 2.5px 0;transform:rotate(42deg);
+  }
+  .check span{font-size:15px}
+
+  .wide{width:100%;padding:15px 24px;font-size:16px}
+  .doneline{text-align:center;color:var(--gray);font-size:14.5px;margin:-8px 0 22px}
+  .minor{display:flex;gap:2px;justify-content:center;margin-top:12px;flex-wrap:wrap}
+  .minor .plain{font-size:13.5px}
+  .cardActs{margin-top:24px;display:flex;gap:10px;justify-content:flex-end}
+  .warn{
+    margin-top:10px;font-family:var(--sans);font-size:11.5px;
+    color:var(--gray);line-height:1.7;text-align:left;
+  }
+  .link{user-select:all;-webkit-user-select:all;
+    margin-top:18px;font-family:var(--sans);font-size:11.5px;word-break:break-all;
+    line-height:1.65;background:var(--bg);border:1px solid var(--hair);
+    border-radius:14px;padding:12px 15px;max-height:96px;overflow:auto;color:var(--gray);
+  }
+
+  /* 攤開的紙條 */
+  .slip{
+    width:100%;max-width:400px;background:var(--card);
+    border-radius:20px;padding:44px 30px;text-align:center;
+    box-shadow:0 26px 70px rgba(26,26,23,.3);
+    transform:scale(.86);opacity:0;
+    transition:transform .45s cubic-bezier(.2,1.2,.4,1),opacity .3s ease;
+  }
+  .veil.open .slip{transform:scale(1);opacity:1}
+  .slip .no{font-size:12px;color:var(--gray);letter-spacing:.16em;margin-bottom:20px}
+  .slip .msg{font-size:22px;line-height:2.05;letter-spacing:.03em;white-space:pre-wrap;word-break:break-word}
+  .slipActs{margin-top:22px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+
+  .mine{position:fixed;top:20px;right:14px;z-index:4;font-size:13px}
+  .jarRow{border-top:1px solid var(--hair);padding:15px 2px 13px}
+  .jarRow:first-child{border-top:0;padding-top:4px}
+  .dots{display:flex;gap:5px;margin-bottom:9px}
+  .dots i{width:10px;height:10px;border-radius:50%;border:1.5px solid var(--ink);display:block}
+  .jarRow h3{font-size:16.5px;font-weight:500;letter-spacing:.03em}
+  .jarRow .meta{font-family:var(--sans);font-size:11.5px;color:var(--gray);margin-top:5px}
+  .rowActs{margin-top:9px;display:flex;gap:0;flex-wrap:wrap}
+  .rowActs .plain{font-size:13px;padding:8px 12px 8px 0}
+  .mineEmpty{color:var(--gray);font-size:14px;text-align:center;padding:10px 0 4px}
+  #mineList{max-height:52vh;overflow:auto}
+
+  .toast{
+    position:fixed;left:50%;bottom:26px;transform:translate(-50%,10px);z-index:20;
+    background:var(--ink);color:var(--bg);font-size:13px;letter-spacing:.05em;
+    border-radius:11px;padding:11px 20px;opacity:0;pointer-events:none;
+    transition:opacity .25s ease,transform .25s ease;
+  }
+  .toast.show{opacity:1;transform:translate(-50%,0)}
+
+  /* 飛進罐子的紙條 */
+  .fly{
+    position:fixed;z-index:8;pointer-events:none;
+    font-family:var(--serif);font-size:25px;color:var(--ink);
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center;
+    transition:transform .6s cubic-bezier(.5,0,.72,.5),opacity .6s ease;
+  }
+  .hide{display:none !important}
+
+  @media (max-width:400px){
+    h1{font-size:19px}
+    #msg{font-size:22px}
+    .slip{padding:36px 24px}
+    .slip .msg{font-size:20px}
+  }
+</style>
+</head>
+<body>
+<button class="plain mine hide" id="mineBtn">我的罐子</button>
+<div id="app">
+  <header>
+    <h1 id="title">星星罐</h1>
+    <p class="sub" id="sub">一顆星星，一句話　·　裝滿了送給他</p>
+  </header>
+
+  <div id="jarWrap">
+    <canvas id="jar"></canvas>
+    <p class="count" id="count"></p>
+  </div>
+
+  <div class="deck" id="deckFill">
+    <input id="msg" maxlength="70" placeholder="寫一句話…" autocomplete="off">
+    <div class="acts">
+      <button class="solid" id="fold" disabled>摺成星星</button>
+      <button class="hide" id="openSeal">蓋上蓋子</button>
+    </div>
+    <div class="acts"><button class="plain" id="demoBtn">看看收到的人會看到什麼</button></div>
+  </div>
+
+  <div class="deck hide" id="deckOpen">
+    <div class="acts">
+      <button class="solid" id="pick">搖出一顆</button>
+    </div>
+    <p class="help" id="helpOpen">也可以直接點罐子裡的星星</p>
+    <div class="acts"><button class="plain hide" id="exitPreview">離開預覽</button></div>
+  </div>
+</div>
+
+<div class="veil" id="sealVeil">
+  <div class="card">
+    <button class="x" id="closeSeal" aria-label="關閉">✕</button>
+
+    <div id="sealForm">
+      <h2>蓋上蓋子</h2>
+      <div class="field">
+        <label>要給誰</label>
+        <input class="pill" id="toName" maxlength="14" placeholder="他的名字（可以不填）">
+      </div>
+      <div class="field">
+        <label>你是誰</label>
+        <input class="pill" id="fromName" maxlength="14" placeholder="你的名字（可以不填）">
+      </div>
+      <div class="check" id="paceCheck">
+        <span class="box"></span>
+        <span>一天只讓他開一顆</span>
+      </div>
+      <div class="cardActs">
+        <button id="backSeal">再想想</button>
+        <button class="solid" id="doSeal">蓋起來</button>
+      </div>
+    </div>
+
+    <div id="sealDone" class="hide">
+      <h2>封好了</h2>
+      <p class="doneline" id="doneLine"></p>
+      <button class="solid wide" id="shareLink">傳給他</button>
+      <div class="minor">
+        <button class="plain" id="previewLink">先自己看看</button>
+        <button class="plain" id="reopenForm">回去再加幾顆</button>
+      </div>
+      <div class="link" id="linkText"></div>
+      <p class="warn" id="linkNote">拿到這條連結的人都能打開</p>
+      <p class="warn hide" id="linkWarn"></p>
+    </div>
+
+  </div>
+</div>
+
+<div class="veil" id="mineVeil">
+  <div class="card">
+    <button class="x" id="closeMine" aria-label="關閉">✕</button>
+    <h2>我的罐子</h2>
+    <div id="mineList"></div>
+  </div>
+</div>
+
+<div class="veil" id="slipVeil">
+  <div>
+    <div class="slip">
+      <p class="no" id="slipNo"></p>
+      <p class="msg" id="slipMsg"></p>
+    </div>
+    <div class="slipActs">
+      <button id="slipClose">放回罐子</button>
+      <button class="solid" id="slipNext">再一顆</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  const $ = id => document.getElementById(id);
+  const rnd = (a,b) => a + Math.random()*(b-a);
+
+  // ══════════ 整罐星星裝進網址 ══════════
+  function b64u(bytes){
+    let s='';
+    for(let i=0;i<bytes.length;i+=0x8000)
+      s+=String.fromCharCode.apply(null,bytes.subarray(i,i+0x8000));
+    return btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+  }
+  function unb64u(str){
+    const s=str.replace(/-/g,'+').replace(/_/g,'/');
+    const bin=atob(s+'==='.slice((s.length+3)%4));
+    const out=new Uint8Array(bin.length);
+    for(let i=0;i<bin.length;i++) out[i]=bin.charCodeAt(i);
+    return out;
+  }
+  async function pack(obj){
+    const bytes=new TextEncoder().encode(JSON.stringify(obj));
+    if(typeof CompressionStream==='function'){
+      try{
+        const cs=new CompressionStream('deflate-raw');
+        const w=cs.writable.getWriter(); w.write(bytes); w.close();
+        return '1'+b64u(new Uint8Array(await new Response(cs.readable).arrayBuffer()));
+      }catch(e){}
+    }
+    return '0'+b64u(bytes);
+  }
+  async function unpack(str){
+    const data=unb64u(str.slice(1));
+    let bytes=data;
+    if(str[0]==='1'){
+      const ds=new DecompressionStream('deflate-raw');
+      const w=ds.writable.getWriter(); w.write(data); w.close();
+      bytes=new Uint8Array(await new Response(ds.readable).arrayBuffer());
+    }
+    return JSON.parse(new TextDecoder().decode(bytes));
+  }
+
+  let mem=[], memDay='';
+  const store={
+    key:'',
+    read(){ try{ return JSON.parse(localStorage.getItem(this.key)||'[]'); }catch(e){ return mem; } },
+    write(l){ mem=l; if(!this.key) return; try{ localStorage.setItem(this.key,JSON.stringify(l)); }catch(e){} },
+    lastDay(){ try{ return localStorage.getItem(this.key+':day')||memDay; }catch(e){ return memDay; } },
+    stamp(d){ memDay=d; if(!this.key) return; try{ localStorage.setItem(this.key+':day',d); }catch(e){} }
+  };
+  const today=()=>new Date().toISOString().slice(0,10);
+
+  // ══════════ 我做過的罐子 ══════════
+  const SHELF='starjar:mine';
+  let shelfMem=null;
+  function loadShelf(){
+    if(shelfMem) return shelfMem;
+    try{ shelfMem=JSON.parse(localStorage.getItem(SHELF)||'[]'); }
+    catch(e){ shelfMem=[]; }
+    if(!Array.isArray(shelfMem)) shelfMem=[];
+    return shelfMem;
+  }
+  function saveShelf(list){
+    shelfMem=list.slice(0,30);
+    try{ localStorage.setItem(SHELF,JSON.stringify(shelfMem)); }catch(e){}
+  }
+  function rememberJar(code,to,from,pace,n){
+    const list=loadShelf().filter(j=>j.code!==code);
+    list.unshift({code,to,from,pace,n,at:Date.now()});
+    saveShelf(list);
+    refreshMineBtn();
+  }
+  function refreshMineBtn(){
+    const n=loadShelf().length;
+    $('mineBtn').classList.toggle('hide', n===0 || mode==='open');
+    $('mineBtn').textContent = n ? '我的罐子 '+n : '我的罐子';
+  }
+  function hashOf(s){
+    let h=5381;
+    for(let i=0;i<s.length;i++) h=((h<<5)+h+s.charCodeAt(i))|0;
+    return 'jar'+(h>>>0).toString(36);
+  }
+
+  // ══════════ 麥克筆：一次畫定，之後每格重畫都一樣 ══════════
+  function seeded(n){
+    let s=(n>>>0)||1;
+    return ()=>((s=(s*1664525+1013904223)>>>0)/4294967296);
+  }
+  function wobble(pts,amt,seed){
+    const r=seeded(seed);
+    return pts.map(p=>[p[0]+(r()-.5)*amt, p[1]+(r()-.5)*amt]);
+  }
+  function tracePts(ctx,pts,close){
+    ctx.beginPath();
+    ctx.moveTo(pts[0][0],pts[0][1]);
+    for(let i=1;i<pts.length;i++) ctx.lineTo(pts[i][0],pts[i][1]);
+    if(close) ctx.closePath();
+  }
+  // 同一條線描兩遍、粗細略不同 → 邊緣不平整，像簽字筆
+  function marker(ctx,pts,close,w,seed){
+    ctx.strokeStyle=INK; ctx.lineJoin='round'; ctx.lineCap='round';
+    ctx.lineWidth=w;
+    tracePts(ctx,wobble(pts,w*.34,seed),close); ctx.stroke();
+    ctx.lineWidth=w*.82;
+    tracePts(ctx,wobble(pts,w*.62,seed+3331),close); ctx.stroke();
+  }
+  const INK='#1A1A17', BG='#F6F4ED';
+  // 粉質、不刺眼的六色，配黑輪廓才像手塗上去的
+  const FILL=['#E9A03B','#DE6B57','#6FA3B8','#8FA96B','#A98BC0','#E9A8AE'];
+
+  // ══════════ 狀態 ══════════
+  const MAX=60;
+  let mode='fill';
+  let jarData={to:'',from:'',pace:0,m:[]};
+  const stars=[];
+  let readSet=new Set();
+  let shake=0, lidOn=false;
+
+  // ══════════ 畫布 ══════════
+  const jar=$('jar'), jc=jar.getContext('2d');
+  let W=0,H=0,DPR=1;
+  let box={x:0,y:0,w:0,h:0,mouth:0,shoulder:0};
+  let jarPts=null;
+
+  // 寬口、短頸、大圓角方身
+  function buildJarPts(){
+    const b=box, cx=b.x+b.w/2, top=b.y, bot=b.y+b.h, r=b.r;
+    const L=b.x, R=b.x+b.w;
+    const lipL=cx-b.lipW/2, lipR=cx+b.lipW/2;
+    const nL=cx-b.neckW/2, nR=cx+b.neckW/2;
+    const lipB=top+b.lipH, neckB=lipB+b.neckH, shB=b.shoulder;
+    const p=[];
+    p.push([lipL,top],[lipR,top],[lipR,lipB],[nR,lipB],[nR,neckB]);
+    for(let i=1;i<=7;i++){                       // 右肩，往外撐開再往下
+      const t=i/7, mt=1-t;
+      p.push([mt*mt*nR+2*mt*t*R+t*t*R, mt*mt*neckB+2*mt*t*neckB+t*t*shB]);
+    }
+    p.push([R,bot-r]);
+    for(let i=1;i<=7;i++){                       // 右下圓角
+      const a=i/7*(Math.PI/2);
+      p.push([R-r+Math.cos(a)*r, bot-r+Math.sin(a)*r]);
+    }
+    p.push([L+r,bot]);
+    for(let i=1;i<=7;i++){                       // 左下圓角
+      const a=i/7*(Math.PI/2);
+      p.push([L+r-Math.sin(a)*r, bot-r+Math.cos(a)*r]);
+    }
+    p.push([L,shB]);
+    for(let i=1;i<=7;i++){                       // 左肩
+      const t=i/7, mt=1-t;
+      p.push([mt*mt*L+2*mt*t*L+t*t*nL, mt*mt*shB+2*mt*t*neckB+t*t*neckB]);
+    }
+    p.push([nL,lipB],[lipL,lipB]);
+    jarPts=p;
+  }
+
+  function resize(){
+    DPR=Math.min(window.devicePixelRatio||1,2);
+    const wrap=$('jarWrap');
+    W=wrap.clientWidth; H=wrap.clientHeight;
+    jar.width=W*DPR; jar.height=H*DPR;
+    jar.style.width=W+'px'; jar.style.height=H+'px';
+    jc.setTransform(DPR,0,0,DPR,0,0);
+
+    const jw=Math.min(W*.80, H*.60, 348);
+    const jh=Math.min(H*.86, jw*1.24);
+    box={x:(W-jw)/2, y:(H-jh)/2+jh*.03, w:jw, h:jh};
+    box.r=jw*.22; box.lipW=jw*.58; box.neckW=jw*.5;
+    box.lipH=jh*.035; box.neckH=jh*.075;
+    box.shoulder=box.y+box.lipH+box.neckH+jh*.11;
+    box.mouth=box.neckW;
+    buildJarPts();
+    for(const s of stars){ s.r=starSize()*(s.rr||1); confine(s); }
+  }
+  window.addEventListener('resize',resize);
+
+  // ══════════ 星星 ══════════
+  const starSize = () => Math.max(13, box.w*.062);   // 罐子多大，星星就多大
+  function makeStar(msg,i){
+    const rr=rnd(.88,1.12);
+    return {
+      msg, i, rr,
+      x:box.x+box.w/2+rnd(-10,10), y:box.y-24,
+      vx:rnd(-.5,.5), vy:0, r:starSize()*rr,
+      rot:Math.random()*6.283, vrot:rnd(-.06,.06),
+      seed:(i*7919+31)>>>0, color:FILL[(i*2654435761>>>5)%FILL.length], pop:0
+    };
+  }
+  function starPts(s,r){
+    const p=[];
+    for(let i=0;i<5;i++){
+      const a0=s.rot-Math.PI/2+i*1.2566, a1=s.rot-Math.PI/2+(i+1)*1.2566;
+      const x0=s.x+Math.cos(a0)*r, y0=s.y+Math.sin(a0)*r;
+      const x1=s.x+Math.cos(a1)*r, y1=s.y+Math.sin(a1)*r;
+      const mx=(x0+x1)/2, my=(y0+y1)/2;
+      p.push([x0,y0],[s.x+(mx-s.x)*.7, s.y+(my-s.y)*.7]);   // 邊向內凹＝摺紙星
+    }
+    return p;
+  }
+  // 還沒讀 → 塗滿顏色；讀過了 → 顏色被拿走，只剩空輪廓
+  function drawStar(ctx,s){
+    const read = mode==='open' && readSet.has(s.i);
+    const pts=starPts(s, s.r*(1+s.pop*.28));
+    tracePts(ctx,wobble(pts,.9,s.seed),true);
+    ctx.fillStyle = read ? BG : s.color;
+    ctx.fill();
+    marker(ctx,pts,true,read?2.6:3.2,s.seed);
+  }
+
+  // ══════════ 罐子 ══════════
+  function drawJarBack(ctx){
+    tracePts(ctx,jarPts,true);
+    ctx.fillStyle=BG; ctx.fill();
+  }
+  function drawJarFront(ctx){
+    marker(ctx,jarPts,true,6.5,1234);
+    if(lidOn){                                   // 蓋子：罐口上再壓一條粗黑
+      const b=box, cx=b.x+b.w/2;
+      const lid=[[cx-b.lipW/2-6,b.y-8],[cx+b.lipW/2+6,b.y-8]];
+      ctx.lineCap='round';
+      ctx.strokeStyle=INK; ctx.lineWidth=13;
+      tracePts(ctx,wobble(lid,2,77),false); ctx.stroke();
+    }
+  }
+
+  // ══════════ 物理 ══════════
+  function confine(s){
+    const L=box.x+s.r+4, R=box.x+box.w-s.r-4, B=box.y+box.h-s.r-5;
+    if(s.x<L){ s.x=L; s.vx=Math.abs(s.vx)*.42; }
+    if(s.x>R){ s.x=R; s.vx=-Math.abs(s.vx)*.42; }
+    if(s.y>B){ s.y=B; s.vy=-Math.abs(s.vy)*.32; s.vx*=.9; s.vrot*=.88; }
+    if(s.y<box.shoulder){
+      const nL=box.x+(box.w-box.mouth)/2+s.r, nR=box.x+(box.w+box.mouth)/2-s.r;
+      if(s.x<nL){ s.x=nL; s.vx=Math.abs(s.vx)*.4; }
+      if(s.x>nR){ s.x=nR; s.vx=-Math.abs(s.vx)*.4; }
+      if(lidOn && s.y<box.y+s.r+6){ s.y=box.y+s.r+6; s.vy=Math.abs(s.vy)*.3; }
+    }
+  }
+  const P={x:0,y:0,px:0,py:0,down:false,moved:0};
+  function physics(){
+    for(const s of stars){
+      s.vy+=.44;
+      s.vx*=.985; s.vy*=.988;
+      if(shake>0){ s.vx+=rnd(-1,1)*shake*.5; s.vy-=rnd(0,1)*shake*.55; s.vrot+=rnd(-.05,.05)*shake; }
+      s.x+=s.vx; s.y+=s.vy;
+      s.rot+=s.vrot; s.vrot*=.96;
+      if(s.pop>0) s.pop=Math.max(0,s.pop-.05);
+      if(P.down){
+        const dx=s.x-P.x, dy=s.y-P.y, d2=dx*dx+dy*dy;
+        if(d2<9000 && d2>1){
+          const d=Math.sqrt(d2), f=(1-d/95)*1.5;
+          s.vx+=dx/d*f+(P.x-P.px)*.09;
+          s.vy+=dy/d*f+(P.y-P.py)*.09;
+          s.vrot+=rnd(-.03,.03);
+        }
+      }
+      confine(s);
+    }
+    for(let i=0;i<stars.length;i++){
+      const a=stars[i];
+      for(let j=i+1;j<stars.length;j++){
+        const b=stars[j];
+        const dx=b.x-a.x, dy=b.y-a.y, min=(a.r+b.r)*.92, d2=dx*dx+dy*dy;
+        if(d2<min*min && d2>.01){
+          const d=Math.sqrt(d2), push=(min-d)/d*.5;
+          a.x-=dx*push; a.y-=dy*push;
+          b.x+=dx*push; b.y+=dy*push;
+          a.vrot-=push*.02; b.vrot+=push*.02;
+        }
+      }
+    }
+    for(const s of stars) confine(s);
+    if(shake>0) shake=Math.max(0,shake-.045);
+  }
+
+  // ══════════ 主迴圈 ══════════
+  function loop(t){
+    requestAnimationFrame(loop);
+    try{ render(t); }catch(e){ console.warn('這一格畫壞了：',e); }
+  }
+  function render(t){
+    jc.clearRect(0,0,W,H);
+    physics();
+    jc.save();
+    if(shake>0) jc.translate(Math.sin(t*.06)*shake*7, Math.sin(t*.083)*shake*3);
+    drawJarBack(jc);
+    jc.save();
+    tracePts(jc,jarPts,true); jc.clip();
+    for(const s of stars) drawStar(jc,s);
+    jc.restore();
+    drawJarFront(jc);
+    jc.restore();
+    P.px=P.x; P.py=P.y;
+  }
+
+  // ══════════ 互動 ══════════
+  function pointAt(e){
+    const r=jar.getBoundingClientRect();
+    return {x:e.clientX-r.left, y:e.clientY-r.top};
+  }
+  jar.addEventListener('pointerdown',e=>{
+    const p=pointAt(e);
+    P.x=P.px=p.x; P.y=P.py=p.y; P.down=true; P.moved=0;
+    if(jar.setPointerCapture) jar.setPointerCapture(e.pointerId);
+  });
+  jar.addEventListener('pointermove',e=>{
+    const p=pointAt(e);
+    if(P.down) P.moved+=Math.abs(p.x-P.x)+Math.abs(p.y-P.y);
+    P.x=p.x; P.y=p.y;
+  });
+  jar.addEventListener('pointerup',e=>{
+    if(P.down && P.moved<9){
+      const p=pointAt(e);
+      let hit=null,best=1e9;
+      for(const s of stars){
+        const d=(s.x-p.x)*(s.x-p.x)+(s.y-p.y)*(s.y-p.y);
+        if(d<s.r*s.r*1.6 && d<best){ best=d; hit=s; }
+      }
+      if(hit){ hit.pop=1; showSlip(hit); }
+    }
+    P.down=false;
+  });
+  jar.addEventListener('pointercancel',()=>P.down=false);
+
+  let toastT=null;
+  function toast(m){
+    const el=$('toast');
+    el.textContent=m; el.classList.add('show');
+    clearTimeout(toastT);
+    toastT=setTimeout(()=>el.classList.remove('show'),2000);
+  }
+  function updateCount(){
+    if(mode==='fill'){
+      $('count').textContent = stars.length ? '罐子裡有 '+stars.length+' 顆' : '';
+      $('openSeal').classList.toggle('hide', stars.length===0);
+      $('demoBtn').classList.toggle('hide', stars.length!==0);
+    }else{
+      $('demoBtn').classList.add('hide');
+      const left=stars.length-readSet.size;
+      $('count').textContent = left ? '還有 '+left+' 顆沒開' : '全部都看過了';
+    }
+  }
+
+  // ══════════ 丟一顆進去 ══════════
+  function flyStrip(text){
+    const ta=$('msg').getBoundingClientRect();
+    const jr=jar.getBoundingClientRect();
+    const el=document.createElement('div');
+    el.className='fly';
+    el.textContent=text;
+    el.style.left=ta.left+'px';
+    el.style.top=ta.top+'px';
+    el.style.width=ta.width+'px';
+    document.body.appendChild(el);
+    const tx=jr.top+box.y-10-ta.top;
+    requestAnimationFrame(()=>{
+      el.style.transform='translateY('+tx+'px) scale(.1)';
+      el.style.opacity='0';
+    });
+    setTimeout(()=>el.remove(),620);
+  }
+  function foldStar(){
+    const v=$('msg').value.trim();
+    if(!v){ return; }
+    if(stars.length>=MAX){ toast('罐子滿了'); return; }
+    flyStrip(v);
+    jarData.m.push(v);
+    $('msg').value='';
+    $('fold').disabled=true;
+    setTimeout(()=>{
+      const s=makeStar(v,stars.length);
+      s.pop=1; s.vy=1.5;
+      stars.push(s);
+      updateCount();
+    },500);
+  }
+  $('fold').addEventListener('click',foldStar);
+  $('msg').addEventListener('keydown',e=>{
+    if(e.key==='Enter'){ e.preventDefault(); foldStar(); }
+  });
+  // 沒寫字的時候按鈕是暗的，寫了才亮起來
+  $('msg').addEventListener('input',()=>{
+    $('fold').disabled = !$('msg').value.trim();
+  });
+
+  // ══════════ 打開一顆 ══════════
+  function showSlip(s){
+    if(mode==='open'){
+      if(jarData.pace===1 && !readSet.has(s.i) && store.lastDay()===today()){
+        toast('今天那顆開過了，明天再來'); return;
+      }
+      if(!readSet.has(s.i)){
+        readSet.add(s.i);
+        store.write([...readSet]);
+        if(jarData.pace===1) store.stamp(today());
+      }
+      $('slipNo').textContent='第 '+(s.i+1)+' 顆　共 '+stars.length+' 顆';
+    }else{
+      $('slipNo').textContent='第 '+(s.i+1)+' 顆';
+    }
+    $('slipMsg').textContent=s.msg;
+    $('slipVeil').classList.add('open');
+    $('slipNext').classList.toggle('hide', mode!=='open' || readSet.size>=stars.length);
+    updateCount();
+  }
+  $('slipClose').addEventListener('click',()=>$('slipVeil').classList.remove('open'));
+  $('slipVeil').addEventListener('click',e=>{
+    if(e.target===$('slipVeil')) $('slipVeil').classList.remove('open');
+  });
+  $('slipNext').addEventListener('click',()=>{
+    $('slipVeil').classList.remove('open');
+    setTimeout(pickOne,240);
+  });
+  function pickOne(){
+    const left=stars.filter(s=>!readSet.has(s.i));
+    if(!left.length){ toast('每一顆都開過了'); return; }
+    if(jarData.pace===1 && store.lastDay()===today()){
+      toast('今天那顆開過了，明天再來'); return;
+    }
+    shake=1;
+    const s=left[Math.random()*left.length|0];
+    setTimeout(()=>{ s.pop=1; s.vy=-9; s.vrot=rnd(-.25,.25); },260);
+    setTimeout(()=>showSlip(s),620);
+  }
+  $('pick').addEventListener('click',pickOne);
+
+  // ══════════ 蓋上蓋子 ══════════
+  let pace=0;
+  $('paceCheck').addEventListener('click',()=>{
+    pace=pace?0:1;
+    $('paceCheck').classList.toggle('on',pace===1);
+  });
+  function showSealStep(step){
+    $('sealForm').classList.toggle('hide', step==='done');
+    $('sealDone').classList.toggle('hide', step!=='done');
+  }
+  $('openSeal').addEventListener('click',()=>{
+    showSealStep(sealedUrl?'done':'form');
+    $('sealVeil').classList.add('open');
+  });
+  $('closeSeal').addEventListener('click',()=>$('sealVeil').classList.remove('open'));
+  $('backSeal').addEventListener('click',()=>$('sealVeil').classList.remove('open'));
+  $('reopenForm').addEventListener('click',()=>{ showSealStep('form'); });
+
+  let sealedUrl='';
+  const canShare = typeof navigator.share === 'function';
+
+  async function copyUrl(){
+    try{ await navigator.clipboard.writeText(sealedUrl); return true; }catch(e){}
+    try{                                    // 非 https 時 clipboard 會被擋，用舊方法
+      const ta=document.createElement('textarea');
+      ta.value=sealedUrl;
+      ta.style.cssText='position:fixed;top:-9999px';
+      document.body.appendChild(ta);
+      ta.select();
+      const ok=document.execCommand('copy');
+      ta.remove();
+      return ok;
+    }catch(e){ return false; }
+  }
+
+  $('doSeal').addEventListener('click',async ()=>{
+    try{
+      const to=$('toName').value.trim(), from=$('fromName').value.trim();
+      const code=await pack({v:1,to,from,pace,m:jarData.m});
+      sealedUrl=location.href.split('#')[0]+'#'+code;
+      lidOn=true;
+
+      $('doneLine').textContent = (to ? to+'　' : '') + jarData.m.length+' 顆星星';
+      $('linkText').textContent = sealedUrl;
+      $('shareLink').textContent = canShare ? '傳給他' : '複製連結';
+
+      // 還沒放到網路上的話，這條連結只指得到你自己的裝置
+      const live=/^https?:/i.test(sealedUrl);
+      const warn=$('linkWarn');
+      warn.classList.toggle('hide',live);
+      if(!live) warn.textContent='這條連結指向你自己的裝置，傳給別人打不開。把這個檔案放到網路上，產生的連結才送得出去。';
+      else if(sealedUrl.length>7000) toast('連結有點長，有些軟體可能會截斷');
+
+      rememberJar(code,to,from,pace,jarData.m.length);
+      showSealStep('done');
+    }catch(e){ toast('蓋不起來，再試一次'); }
+  });
+
+  $('shareLink').addEventListener('click',async ()=>{
+    const to=$('toName').value.trim();
+    if(canShare){
+      try{
+        await navigator.share({
+          title:'一罐星星',
+          text: to ? '給 '+to+' 的一罐星星' : '有人裝了一罐星星給你',
+          url: sealedUrl
+        });
+        return;
+      }catch(e){ if(e && e.name==='AbortError') return; }
+    }
+    toast(await copyUrl() ? '連結複製好了' : '複製不了，長按下面的連結選取');
+  });
+
+  $('previewLink').addEventListener('click',()=>{
+    $('sealVeil').classList.remove('open');
+    enterOpenMode({to:$('toName').value.trim(), from:$('fromName').value.trim(),
+                   pace, m:jarData.m}, 'preview');
+  });
+
+  function fmtDate(ts){
+    const d=new Date(ts);
+    return (d.getMonth()+1)+' 月 '+d.getDate()+' 日';
+  }
+  function renderMine(){
+    const list=loadShelf(), wrap=$('mineList');
+    wrap.innerHTML='';
+    if(!list.length){
+      wrap.innerHTML='<p class="mineEmpty">還沒有封好的罐子</p>';
+      return;
+    }
+    list.forEach(j=>{
+      const row=document.createElement('div');
+      row.className='jarRow';
+      const dots=Array.from({length:Math.min(6,j.n)},(_,i)=>
+        '<i style="background:'+FILL[(i*2654435761>>>5)%FILL.length]+'"></i>').join('');
+      row.innerHTML=
+        '<div class="dots">'+dots+'</div>'+
+        '<h3>'+(j.to?'給 '+esc(j.to):'沒寫收件人')+'</h3>'+
+        '<p class="meta">'+j.n+' 顆星星　·　'+fmtDate(j.at)+
+          (j.pace===1?'　·　一天一顆':'')+'</p>';
+      const acts=document.createElement('div');
+      acts.className='rowActs';
+      const bShare=document.createElement('button');
+      bShare.className='plain';
+      bShare.textContent = canShare?'傳給他':'複製連結';
+      bShare.addEventListener('click',()=>shareJar(j));
+      const bOpen=document.createElement('button');
+      bOpen.className='plain';
+      bOpen.textContent='打開來看';
+      bOpen.addEventListener('click',async ()=>{
+        try{
+          const d=await unpack(j.code);
+          $('mineVeil').classList.remove('open');
+          enterOpenMode(d,'preview');
+        }catch(e){ toast('這罐讀不出來'); }
+      });
+      const bDel=document.createElement('button');
+      bDel.className='plain';
+      bDel.textContent='刪掉';
+      bDel.addEventListener('click',()=>{
+        saveShelf(loadShelf().filter(x=>x.code!==j.code));
+        refreshMineBtn(); renderMine();
+      });
+      acts.append(bShare,bOpen,bDel);
+      row.appendChild(acts);
+      wrap.appendChild(row);
+    });
+  }
+  function esc(t){ const d=document.createElement('div'); d.textContent=t; return d.innerHTML; }
+  function urlFor(code){ return location.href.split('#')[0]+'#'+code; }
+  async function shareJar(j){
+    const url=urlFor(j.code);
+    if(canShare){
+      try{
+        await navigator.share({title:'一罐星星',
+          text:j.to?'給 '+j.to+' 的一罐星星':'有人裝了一罐星星給你', url});
+        return;
+      }catch(e){ if(e&&e.name==='AbortError') return; }
+    }
+    sealedUrl=url;
+    toast(await copyUrl() ? '連結複製好了' : '複製不了，這個環境不給複製');
+  }
+  $('mineBtn').addEventListener('click',()=>{ renderMine(); $('mineVeil').classList.add('open'); });
+  $('closeMine').addEventListener('click',()=>$('mineVeil').classList.remove('open'));
+  $('mineVeil').addEventListener('click',e=>{
+    if(e.target===$('mineVeil')) $('mineVeil').classList.remove('open');
+  });
+
+  // ══════════ 收到罐子 ══════════
+  let ephemeral=false, stashed=null;
+  function enterOpenMode(d, keySeed){
+    if(keySeed==='preview' && !stashed) stashed=jarData;   // 先把你自己的罐子收好
+    jarData=d; mode='open'; lidOn=true;
+    ephemeral = (keySeed==='preview');
+    store.key = ephemeral ? '' : hashOf(String(keySeed).slice(0,80)+d.m.length);
+    mem=[]; memDay='';
+    readSet = ephemeral ? new Set() : new Set(store.read());
+    $('deckFill').classList.add('hide');
+    $('deckOpen').classList.remove('hide');
+    $('exitPreview').classList.toggle('hide', !ephemeral);
+    $('sealVeil').classList.remove('open');
+    $('title').textContent = d.to ? '給 '+d.to : '這罐星星給你';
+    $('sub').textContent   = d.from ? '來自 '+d.from : '裡面有 '+d.m.length+' 句話';
+    $('helpOpen').textContent = d.pace===1
+      ? '一天一顆，也可以直接點星星'
+      : '也可以直接點罐子裡的星星';
+    resize();
+    stars.length=0;
+    d.m.forEach((msg,i)=>{
+      const st=makeStar(msg,i);
+      st.x=box.x+rnd(box.w*.24,box.w*.76);
+      st.y=box.y+box.h-24-Math.random()*box.h*.45;
+      stars.push(st);
+    });
+    updateCount();
+    refreshMineBtn();
+  }
+
+  // 預覽看完要能回來，而且不能重新整理，不然還沒送出的內容就沒了
+  function exitPreview(){
+    if(stashed){ jarData=stashed; stashed=null; }          // 原封不動還你
+    mode='fill'; ephemeral=false; readSet=new Set();
+    $('deckOpen').classList.add('hide');
+    $('deckFill').classList.remove('hide');
+    $('exitPreview').classList.add('hide');
+    $('title').textContent='星星罐';
+    $('sub').textContent='一顆星星，一句話　·　裝滿了送給他';
+    resize();
+    stars.length=0;
+    jarData.m.forEach((msg,i)=>{
+      const st=makeStar(msg,i);
+      st.x=box.x+rnd(box.w*.24,box.w*.76);
+      st.y=box.y+box.h-24-Math.random()*box.h*.45;
+      stars.push(st);
+    });
+    updateCount();
+    refreshMineBtn();
+  }
+  $('exitPreview').addEventListener('click',exitPreview);
+
+  // 與其解釋，不如直接讓人站在收件人的位置看一次
+  $('demoBtn').addEventListener('click',()=>{
+    enterOpenMode({to:'',from:'',pace:0,m:[
+      '今天也謝謝你',
+      '你笑起來的樣子很好看',
+      '不用一直那麼努力也沒關係',
+      '記得吃飯，記得睡覺',
+      '我一直都在'
+    ]},'preview');
+  });
+
+  async function openFromHash(){
+    const hash=location.hash.slice(1);
+    if(!hash) return false;
+    try{
+      const d=await unpack(hash);
+      if(!d||!Array.isArray(d.m)||!d.m.length) throw new Error('空罐子');
+      enterOpenMode(d, hash.slice(0,80));
+      return true;
+    }catch(e){
+      toast('這條連結讀不出來');
+      return false;
+    }
+  }
+
+  async function boot(){
+    if(await openFromHash()) return;
+    resize();
+    updateCount();
+    refreshMineBtn();
+  }
+  // 有人把連結貼進同一個分頁時，網址只有 hash 變、不會重新載入
+  window.addEventListener('hashchange', openFromHash);
+
+  boot();
+  requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
